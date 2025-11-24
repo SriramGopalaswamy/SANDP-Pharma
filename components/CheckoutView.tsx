@@ -1,25 +1,34 @@
 
 import React, { useState } from 'react';
 import { CartItem, UserRole } from '../types';
-import { Trash2, CreditCard, Building, CheckCircle, AlertCircle, Lock, Wallet, Banknote } from 'lucide-react';
+import { Trash2, CreditCard, Building, CheckCircle, AlertCircle, Lock, Wallet, Banknote, Star } from 'lucide-react';
 
 interface CheckoutViewProps {
   cart: CartItem[];
   onRemoveItem: (productId: number) => void;
   onClearCart: () => void;
   userRole: UserRole;
+  onEarnPoints: (points: number) => void;
 }
 
-const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onRemoveItem, onClearCart, userRole }) => {
+const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onRemoveItem, onClearCart, userRole, onEarnPoints }) => {
   const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<string>('');
+  const [earnedPoints, setEarnedPoints] = useState(0);
 
   const isB2C = userRole === 'customer';
+  const isDistributor = userRole === 'distributor';
 
   const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const gst = subtotal * 0.18;
   const total = subtotal + gst;
+
+  // Calculate Potential Points
+  // Retailer/Customer: 1 pt per 100
+  // Distributor: 2 pts per 100 (Bulk Bonus)
+  const multiplier = isDistributor ? 2 : 1;
+  const potentialPoints = Math.floor((total / 100) * multiplier);
 
   // Set default method based on role if not set
   if (!paymentMethod) {
@@ -33,22 +42,33 @@ const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onRemoveItem, onClear
     setTimeout(() => {
       setIsPaymentProcessing(false);
       setPaymentSuccess(true);
+      setEarnedPoints(potentialPoints);
+      onEarnPoints(potentialPoints);
       setTimeout(() => {
         onClearCart();
-      }, 3000);
+      }, 4000);
     }, 2000);
   };
 
   if (paymentSuccess) {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh] space-y-6">
+      <div className="flex flex-col items-center justify-center h-[60vh] space-y-6 animate-in fade-in duration-500">
         <div className="h-24 w-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center animate-bounce">
           <CheckCircle size={48} />
         </div>
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-900">Order Placed Successfully!</h2>
           <p className="text-gray-500 mt-2">Order ID: #{Math.floor(Math.random() * 10000)}</p>
-          <p className="text-gray-500">Thank you for choosing S&P Pharma.</p>
+          
+          <div className="mt-6 bg-yellow-50 border border-yellow-200 p-4 rounded-xl inline-block">
+             <div className="flex items-center gap-2 text-yellow-700 font-bold justify-center mb-1">
+                 <Star fill="currentColor" size={20} />
+                 <span>+{earnedPoints} Loyalty Points Earned!</span>
+             </div>
+             <p className="text-xs text-yellow-600">Points have been added to your wallet.</p>
+          </div>
+          
+          <p className="text-gray-400 mt-8 text-sm">Redirecting to home...</p>
         </div>
       </div>
     );
@@ -120,6 +140,12 @@ const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onRemoveItem, onClear
           <div className="border-t border-gray-100 pt-4 flex justify-between text-lg font-bold text-gray-900">
             <span>Total</span>
             <span>₹{total.toFixed(2)}</span>
+          </div>
+          
+          {/* Points Preview */}
+          <div className="bg-yellow-50 text-yellow-700 p-3 rounded-lg flex items-center justify-between text-sm font-medium border border-yellow-100">
+             <span className="flex items-center gap-2"><Star size={16} fill="currentColor" /> You will earn</span>
+             <span>+{potentialPoints} Points</span>
           </div>
         </div>
 

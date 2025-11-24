@@ -30,6 +30,14 @@ export interface CartItem {
   quantity: number;
 }
 
+export interface LoyaltyHistoryItem {
+  id: number;
+  title: string;
+  date: string;
+  points: number;
+  type: 'earn' | 'burn';
+}
+
 export enum Tab {
   // Admin
   DASHBOARD = 'dashboard',

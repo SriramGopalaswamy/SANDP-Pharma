@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Tab, UserRole, CartItem } from './types';
+import { Tab, UserRole, CartItem, LoyaltyHistoryItem } from './types';
 import Sidebar from './components/Sidebar';
 import AdminDashboard from './components/AdminDashboard';
 import SpecificationViewer from './components/SpecificationViewer';
@@ -23,12 +23,26 @@ export default function App() {
   // Cart State
   const [cart, setCart] = useState<CartItem[]>([]);
 
+  // Loyalty State
+  const [loyaltyPoints, setLoyaltyPoints] = useState<number>(850);
+  const [loyaltyHistory, setLoyaltyHistory] = useState<LoyaltyHistoryItem[]>([
+    { id: 1, title: 'Order #ORD-9090', date: 'Oct 24', points: 120, type: 'earn' },
+    { id: 2, title: 'Redeemed Voucher', date: 'Oct 20', points: 500, type: 'burn' },
+    { id: 3, title: 'Order #ORD-8821', date: 'Oct 18', points: 85, type: 'earn' },
+    { id: 4, title: 'Tier Bonus', date: 'Oct 01', points: 50, type: 'earn' },
+  ]);
+
   const handleLogin = (role: UserRole) => {
     setUserRole(role);
     // Set initial tab based on role
     if (role === 'admin') setActiveTab(Tab.DASHBOARD);
     else if (role === 'customer') setActiveTab(Tab.B2C_HOME);
     else setActiveTab(Tab.RETAILER_DASHBOARD);
+
+    // Reset points for demo realism based on role
+    if (role === 'distributor') setLoyaltyPoints(15400);
+    else if (role === 'retailer') setLoyaltyPoints(850);
+    else if (role === 'customer') setLoyaltyPoints(240);
   };
 
   const handleLogout = () => {
@@ -61,6 +75,35 @@ export default function App() {
     else setActiveTab(Tab.RETAILER_DASHBOARD);
   };
 
+  // Loyalty Handlers
+  const handleEarnPoints = (amount: number) => {
+    const newHistoryItem: LoyaltyHistoryItem = {
+      id: Date.now(),
+      title: `Order #${Math.floor(Math.random() * 9000) + 1000}`,
+      date: 'Just Now',
+      points: amount,
+      type: 'earn'
+    };
+    setLoyaltyPoints(prev => prev + amount);
+    setLoyaltyHistory(prev => [newHistoryItem, ...prev]);
+  };
+
+  const handleRedeemPoints = (cost: number, rewardTitle: string) => {
+    if (loyaltyPoints >= cost) {
+      const newHistoryItem: LoyaltyHistoryItem = {
+        id: Date.now(),
+        title: `Redeemed: ${rewardTitle}`,
+        date: 'Just Now',
+        points: cost,
+        type: 'burn'
+      };
+      setLoyaltyPoints(prev => prev - cost);
+      setLoyaltyHistory(prev => [newHistoryItem, ...prev]);
+      return true;
+    }
+    return false;
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       // Admin
@@ -71,10 +114,19 @@ export default function App() {
       
       // Retailer / Distributor Shared Route Key
       case Tab.RETAILER_DASHBOARD:
-        return userRole === 'distributor' ? <DistributorDashboard /> : <RetailerDashboard />;
+        return userRole === 'distributor' 
+          ? <DistributorDashboard points={loyaltyPoints} /> 
+          : <RetailerDashboard points={loyaltyPoints} />;
       
       case Tab.LOYALTY:
-        return <LoyaltyView userRole={userRole} />;
+        return (
+          <LoyaltyView 
+            userRole={userRole} 
+            points={loyaltyPoints} 
+            history={loyaltyHistory}
+            onRedeem={handleRedeemPoints}
+          />
+        );
 
       // Customer
       case Tab.B2C_HOME: return <CustomerDashboard onNavigate={setActiveTab} />;
@@ -94,7 +146,15 @@ export default function App() {
       case Tab.MY_ORDERS:
         return <OrderList />;
       case Tab.CHECKOUT:
-        return <CheckoutView cart={cart} onRemoveItem={removeFromCart} onClearCart={clearCart} userRole={userRole} />;
+        return (
+          <CheckoutView 
+            cart={cart} 
+            onRemoveItem={removeFromCart} 
+            onClearCart={clearCart} 
+            userRole={userRole}
+            onEarnPoints={handleEarnPoints}
+          />
+        );
 
       default:
         return <AdminDashboard />;

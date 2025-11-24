@@ -1,26 +1,38 @@
 
-import React from 'react';
-import { Award, Gift, Clock, ArrowRight, Star } from 'lucide-react';
-import { UserRole } from '../types';
+import React, { useState } from 'react';
+import { Award, Gift, Clock, ArrowRight, Star, Check } from 'lucide-react';
+import { UserRole, LoyaltyHistoryItem } from '../types';
 
 interface LoyaltyViewProps {
   userRole: UserRole;
+  points: number;
+  history: LoyaltyHistoryItem[];
+  onRedeem: (cost: number, title: string) => boolean;
 }
 
-const LoyaltyView: React.FC<LoyaltyViewProps> = ({ userRole }) => {
+const LoyaltyView: React.FC<LoyaltyViewProps> = ({ userRole, points, history, onRedeem }) => {
   const isDistributor = userRole === 'distributor';
+  const [successMsg, setSuccessMsg] = useState('');
 
-  // Mock Data
-  const points = isDistributor ? 15400 : 850;
+  // Tiers calculation
   const tier = isDistributor ? 'Platinum Partner' : 'Gold Retailer';
-  const nextTier = isDistributor ? 50000 : 1000;
-  const progress = (points / nextTier) * 100;
+  const nextTier = isDistributor ? 50000 : 2000;
+  const progress = Math.min((points / nextTier) * 100, 100);
 
   const rewards = [
     { id: 1, title: '₹500 Store Credit', cost: 500, desc: 'Instant credit applied to next invoice.' },
     { id: 2, title: 'Free Delivery Voucher', cost: 200, desc: 'Waive shipping fees on next order.' },
     { id: 3, title: isDistributor ? '1% Extra Bulk Discount' : 'Marketing Kit', cost: isDistributor ? 10000 : 1500, desc: isDistributor ? 'Applied for 30 days.' : 'Posters and standees for your shop.' },
+    { id: 4, title: 'Brand Merchandise', cost: 800, desc: 'T-Shirts and Pens for staff.' },
   ];
+
+  const handleRedeemClick = (cost: number, title: string) => {
+    const success = onRedeem(cost, title);
+    if (success) {
+      setSuccessMsg(`Successfully redeemed ${title}!`);
+      setTimeout(() => setSuccessMsg(''), 3000);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -42,7 +54,7 @@ const LoyaltyView: React.FC<LoyaltyViewProps> = ({ userRole }) => {
             </div>
             <h1 className="text-4xl font-bold mb-2">{tier}</h1>
             <p className="text-blue-100 max-w-lg">
-                Earn points on every purchase. {isDistributor ? 'Bulk orders earn 2x.' : 'Generic substitutions earn 3x.'}
+                Earn points on every purchase. {isDistributor ? 'Bulk orders earn 2x.' : 'Orders earn 1 pt per ₹100.'}
             </p>
 
             <div className="mt-8 bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 max-w-md">
@@ -63,12 +75,18 @@ const LoyaltyView: React.FC<LoyaltyViewProps> = ({ userRole }) => {
         </div>
       </div>
 
+      {successMsg && (
+        <div className="bg-green-100 border border-green-200 text-green-800 px-6 py-4 rounded-xl flex items-center gap-2 animate-in slide-in-from-top-4">
+          <Check size={20} />
+          <span className="font-bold">{successMsg}</span>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Rewards Catalog */}
         <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-gray-800">Redeem Rewards</h2>
-                <button className="text-pharma-600 font-medium text-sm hover:underline">View All</button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {rewards.map(r => (
@@ -83,8 +101,9 @@ const LoyaltyView: React.FC<LoyaltyViewProps> = ({ userRole }) => {
                                 <Star size={14} fill="currentColor" /> {r.cost} pts
                             </span>
                             <button 
+                                onClick={() => handleRedeemClick(r.cost, r.title)}
                                 disabled={points < r.cost}
-                                className={`px-4 py-2 rounded-lg text-sm font-bold ${
+                                className={`px-4 py-2 rounded-lg text-sm font-bold transition-transform active:scale-95 ${
                                     points >= r.cost 
                                     ? 'bg-blue-600 text-white hover:bg-blue-700' 
                                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'
@@ -104,27 +123,23 @@ const LoyaltyView: React.FC<LoyaltyViewProps> = ({ userRole }) => {
                 <Clock size={18} className="text-gray-400" /> Recent Activity
             </h3>
             <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
-                {[
-                    { title: 'Order #9090', date: 'Oct 24', pts: '+120', type: 'earn' },
-                    { title: 'Redeemed Voucher', date: 'Oct 20', pts: '-500', type: 'burn' },
-                    { title: 'Order #8821', date: 'Oct 18', pts: '+85', type: 'earn' },
-                    { title: 'Tier Bonus', date: 'Oct 01', pts: '+50', type: 'earn' },
-                ].map((item, i) => (
-                    <div key={i} className="relative flex items-center justify-between pl-8">
-                         <div className={`absolute left-0 h-5 w-5 rounded-full border-2 border-white ${item.type === 'earn' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                {history.map((item) => (
+                    <div key={item.id} className="relative flex items-center justify-between pl-8 animate-in fade-in slide-in-from-left-4">
+                         <div className={`absolute left-0 h-5 w-5 rounded-full border-2 border-white z-10 ${item.type === 'earn' ? 'bg-green-500' : 'bg-red-500'}`}></div>
                          <div>
                             <p className="font-medium text-gray-900 text-sm">{item.title}</p>
                             <p className="text-xs text-gray-500">{item.date}</p>
                          </div>
                          <span className={`font-bold text-sm ${item.type === 'earn' ? 'text-green-600' : 'text-red-600'}`}>
-                            {item.pts}
+                            {item.type === 'earn' ? '+' : '-'}{item.points}
                          </span>
                     </div>
                 ))}
+                {history.length === 0 && (
+                   <p className="pl-8 text-gray-400 text-sm">No recent activity.</p>
+                )}
             </div>
-            <button className="w-full mt-6 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 hover:bg-gray-50 flex items-center justify-center gap-1">
-                Full History <ArrowRight size={14} />
-            </button>
+            
         </div>
       </div>
     </div>

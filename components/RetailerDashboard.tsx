@@ -2,7 +2,11 @@
 import React from 'react';
 import { CreditCard, Package, ChevronRight } from 'lucide-react';
 
-const RetailerDashboard: React.FC = () => {
+interface RetailerDashboardProps {
+  points: number;
+}
+
+const RetailerDashboard: React.FC<RetailerDashboardProps> = ({ points }) => {
   return (
     <div className="space-y-8">
       <div>
@@ -50,13 +54,13 @@ const RetailerDashboard: React.FC = () => {
           <div className="flex justify-between items-start mb-4">
             <div>
               <p className="text-gray-500 text-sm font-medium">Loyalty Points</p>
-              <h3 className="text-3xl font-bold mt-1 text-gray-900">850 pts</h3>
+              <h3 className="text-3xl font-bold mt-1 text-gray-900">{points.toLocaleString()} pts</h3>
             </div>
             <div className="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
               <span className="font-bold text-lg">★</span>
             </div>
           </div>
-          <p className="text-sm text-gray-600">Next Reward: ₹4000 voucher at 1000 pts</p>
+          <p className="text-sm text-gray-600">Earn 1 pt per ₹100 spent.</p>
           <button className="text-pharma-600 text-sm font-bold mt-2 hover:underline">View Rewards</button>
         </div>
       </div>

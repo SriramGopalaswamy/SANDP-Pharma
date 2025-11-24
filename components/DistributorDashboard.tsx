@@ -2,7 +2,11 @@
 import React from 'react';
 import { CreditCard, Package, Truck, Activity } from 'lucide-react';
 
-const DistributorDashboard: React.FC = () => {
+interface DistributorDashboardProps {
+  points: number;
+}
+
+const DistributorDashboard: React.FC<DistributorDashboardProps> = ({ points }) => {
   return (
     <div className="space-y-8">
       <div>
@@ -40,12 +44,12 @@ const DistributorDashboard: React.FC = () => {
         <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-gray-500 text-sm font-medium">Volume Rebate</p>
-              <h3 className="text-3xl font-bold mt-1 text-gray-900">3.5%</h3>
+              <p className="text-gray-500 text-sm font-medium">Loyalty Points</p>
+              <h3 className="text-3xl font-bold mt-1 text-gray-900">{points.toLocaleString()} pts</h3>
             </div>
             <Activity className="text-green-500" />
           </div>
-          <p className="text-sm text-gray-600">Current tier: Gold. Reach ₹1Cr for 4%.</p>
+          <p className="text-sm text-gray-600">Current tier: Platinum. 2x Points Active.</p>
         </div>
       </div>
 
