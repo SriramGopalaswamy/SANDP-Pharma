@@ -72,6 +72,14 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({ cart, onAddToCart, user
   if (selectedProduct) {
     const currentQty = getQuantity(selectedProduct.id, selectedProduct.moq);
     
+    // Dynamic address based on user role
+    const getAddress = () => {
+        if (isCustomer) return { name: 'Anita Kumar', line1: 'Flat 402, Palm Grove', line2: 'Indiranagar, Bangalore - 560038' };
+        if (isDistributor) return { name: 'Global Supply Warehouse', line1: 'Plot 45, Industrial Area', line2: 'Peenya, Bangalore - 560058' };
+        return { name: 'City Pharma', line1: '12th Main Road', line2: 'Indiranagar, Bangalore - 560038' };
+    };
+    const address = getAddress();
+
     return (
         <div className="space-y-6 animate-in slide-in-from-right-4">
             <button onClick={() => setSelectedProduct(null)} className="flex items-center gap-2 text-gray-600 hover:text-pharma-900 font-medium transition-colors">
@@ -176,8 +184,9 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({ cart, onAddToCart, user
                                  <MapPin className="text-blue-600 shrink-0 mt-1" size={24} />
                                  <div>
                                      <p className="text-xs text-blue-600 font-bold uppercase tracking-wider mb-1">Delivering to</p>
-                                     <p className="font-bold text-gray-900 text-base">City Pharma, Indiranagar, Bangalore</p>
-                                     <p className="text-sm text-gray-500">Karnataka - 560038</p>
+                                     <p className="font-bold text-gray-900 text-base">{address.name}</p>
+                                     <p className="text-sm text-gray-500">{address.line1}</p>
+                                     <p className="text-sm text-gray-500">{address.line2}</p>
                                  </div>
                                  <button className="text-xs text-blue-600 font-bold underline ml-auto hover:text-blue-800">Change</button>
                              </div>
