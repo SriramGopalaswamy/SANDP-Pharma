@@ -1,50 +1,96 @@
 
 import React, { useState } from 'react';
-import { Tab, UserRole } from './types';
+import { Tab, UserRole, CartItem } from './types';
 import Sidebar from './components/Sidebar';
 import AdminDashboard from './components/AdminDashboard';
 import SpecificationViewer from './components/SpecificationViewer';
 import OrderList from './components/OrderList';
 import InventoryView from './components/InventoryView';
 import RetailerDashboard from './components/RetailerDashboard';
+import DistributorDashboard from './components/DistributorDashboard';
+import CustomerDashboard from './components/CustomerDashboard';
 import ProductCatalog from './components/ProductCatalog';
 import LoginScreen from './components/LoginScreen';
-import { Menu } from 'lucide-react';
+import CheckoutView from './components/CheckoutView';
+import { Menu, ShoppingCart, UploadCloud } from 'lucide-react';
 
 export default function App() {
-  const [userRole, setUserRole] = useState<UserRole>('admin'); // Default to admin for spec viewing, but allows logout
+  const [userRole, setUserRole] = useState<UserRole | null>(null); 
   const [activeTab, setActiveTab] = useState<Tab>(Tab.DASHBOARD);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  
+  // Cart State
+  const [cart, setCart] = useState<CartItem[]>([]);
 
   const handleLogin = (role: UserRole) => {
     setUserRole(role);
-    setActiveTab(role === 'retailer' ? Tab.RETAILER_DASHBOARD : Tab.DASHBOARD);
+    // Set initial tab based on role
+    if (role === 'admin') setActiveTab(Tab.DASHBOARD);
+    else if (role === 'customer') setActiveTab(Tab.B2C_HOME);
+    else setActiveTab(Tab.RETAILER_DASHBOARD);
   };
 
   const handleLogout = () => {
     setUserRole(null);
+    setCart([]); 
+  };
+
+  const addToCart = (newItem: CartItem) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.id === newItem.id);
+      if (existing) {
+        return prev.map(item => 
+          item.id === newItem.id 
+            ? { ...item, quantity: item.quantity + newItem.quantity }
+            : item
+        );
+      }
+      return [...prev, newItem];
+    });
+  };
+
+  const removeFromCart = (id: number) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  };
+
+  const clearCart = () => {
+    setCart([]);
+    // Redirect logic
+    if (userRole === 'customer') setActiveTab(Tab.B2C_HOME);
+    else setActiveTab(Tab.RETAILER_DASHBOARD);
   };
 
   const renderContent = () => {
     switch (activeTab) {
-      // Admin Tabs
-      case Tab.DASHBOARD:
-        return <AdminDashboard />;
-      case Tab.SPECIFICATION:
-        return <SpecificationViewer />;
-      case Tab.ORDERS:
-        return <OrderList />;
-      case Tab.INVENTORY:
-        return <InventoryView />;
+      // Admin
+      case Tab.DASHBOARD: return <AdminDashboard />;
+      case Tab.SPECIFICATION: return <SpecificationViewer />;
+      case Tab.INVENTORY: return <InventoryView />;
+      case Tab.ORDERS: return <OrderList />;
       
-      // Retailer Tabs
+      // Retailer / Distributor Shared Route Key
       case Tab.RETAILER_DASHBOARD:
-        return <RetailerDashboard />;
+        return userRole === 'distributor' ? <DistributorDashboard /> : <RetailerDashboard />;
+      
+      // Customer
+      case Tab.B2C_HOME: return <CustomerDashboard onNavigate={setActiveTab} />;
+      case Tab.UPLOAD_RX: 
+        return (
+            <div className="flex flex-col items-center justify-center h-[50vh] border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 m-4">
+                <UploadCloud size={64} className="text-gray-400 mb-4" />
+                <h3 className="text-xl font-bold text-gray-700">Upload Prescription</h3>
+                <p className="text-gray-500 mb-6">Take a photo of your prescription to order</p>
+                <button className="bg-teal-600 text-white px-6 py-2 rounded-lg font-bold">Select File</button>
+            </div>
+        );
+
+      // Shared
       case Tab.CATALOG:
-        return <ProductCatalog />;
+        return <ProductCatalog cart={cart} onAddToCart={addToCart} userRole={userRole} />;
       case Tab.MY_ORDERS:
-        // Reuse OrderList for simplicity but conceptually this would be filtered
         return <OrderList />;
+      case Tab.CHECKOUT:
+        return <CheckoutView cart={cart} onRemoveItem={removeFromCart} onClearCart={clearCart} />;
 
       default:
         return <AdminDashboard />;
@@ -54,6 +100,19 @@ export default function App() {
   if (!userRole) {
     return <LoginScreen onLogin={handleLogin} />;
   }
+
+  // Helper for Role Display info
+  const getRoleInfo = () => {
+      switch(userRole) {
+          case 'admin': return { name: 'Mike Admin', label: 'Head of Ops', badge: 'MA', color: 'bg-pharma-100 text-pharma-700' };
+          case 'retailer': return { name: 'Raj StoreOwner', label: 'City Pharma', badge: 'RJ', color: 'bg-emerald-100 text-emerald-700' };
+          case 'distributor': return { name: 'Global Supply', label: 'Bulk Partner', badge: 'GS', color: 'bg-purple-100 text-purple-700' };
+          case 'customer': return { name: 'Anita Kumar', label: 'Prime Member', badge: 'AK', color: 'bg-teal-100 text-teal-700' };
+          default: return { name: 'User', label: '', badge: 'U', color: 'bg-gray-100' };
+      }
+  };
+
+  const roleInfo = getRoleInfo();
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
@@ -93,25 +152,32 @@ export default function App() {
             <div>
               <h1 className="text-2xl font-bold text-gray-800 tracking-tight">SANDP Pharma</h1>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">
-                {userRole === 'admin' ? 'Admin & Spec Portal' : 'Retailer Portal'}
+                {userRole === 'admin' ? 'Admin & Spec Portal' : `${userRole.charAt(0).toUpperCase() + userRole.slice(1)} Portal`}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
+             {/* Cart Icon (Not for Admin) */}
+             {userRole !== 'admin' && (
+               <button 
+                onClick={() => setActiveTab(Tab.CHECKOUT)}
+                className="relative p-2 text-gray-500 hover:text-pharma-600 transition-colors"
+               >
+                 <ShoppingCart size={24} />
+                 {cart.length > 0 && (
+                   <span className="absolute top-0 right-0 h-5 w-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center transform translate-x-1 -translate-y-1">
+                     {cart.length}
+                   </span>
+                 )}
+               </button>
+             )}
+
              <div className="hidden md:flex flex-col items-end mr-4">
-                <span className="text-sm font-medium text-gray-700">
-                  {userRole === 'admin' ? 'Mike Administrator' : 'Raj StoreOwner'}
-                </span>
-                <span className="text-xs text-pharma-600">
-                  {userRole === 'admin' ? 'Head of Ops' : 'City Pharma'}
-                </span>
+                <span className="text-sm font-medium text-gray-700">{roleInfo.name}</span>
+                <span className="text-xs text-gray-400">{roleInfo.label}</span>
              </div>
-             <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold border-2 ${
-               userRole === 'admin' 
-                ? 'bg-pharma-100 text-pharma-700 border-pharma-200' 
-                : 'bg-emerald-100 text-emerald-700 border-emerald-200'
-             }`}>
-                {userRole === 'admin' ? 'MA' : 'RJ'}
+             <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold border-2 border-opacity-20 ${roleInfo.color} border-current`}>
+                {roleInfo.badge}
              </div>
           </div>
         </header>

@@ -16,14 +16,14 @@ const RetailerDashboard: React.FC = () => {
           <div className="flex justify-between items-start mb-4">
             <div>
               <p className="text-pharma-100 text-sm font-medium">Available Credit</p>
-              <h3 className="text-3xl font-bold mt-1">$12,450</h3>
+              <h3 className="text-3xl font-bold mt-1">₹9,96,000</h3>
             </div>
             <CreditCard className="text-pharma-200" />
           </div>
           <div className="w-full bg-pharma-900/30 rounded-full h-2 mb-2">
             <div className="bg-white/80 h-2 rounded-full" style={{ width: '70%' }}></div>
           </div>
-          <p className="text-xs text-pharma-200">Limit: $18,000 • Due in 14 days</p>
+          <p className="text-xs text-pharma-200">Limit: ₹15,00,000 • Due in 14 days</p>
         </div>
 
         <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
@@ -56,7 +56,7 @@ const RetailerDashboard: React.FC = () => {
               <span className="font-bold text-lg">★</span>
             </div>
           </div>
-          <p className="text-sm text-gray-600">Next Reward: $50 voucher at 1000 pts</p>
+          <p className="text-sm text-gray-600">Next Reward: ₹4000 voucher at 1000 pts</p>
           <button className="text-pharma-600 text-sm font-bold mt-2 hover:underline">View Rewards</button>
         </div>
       </div>
@@ -84,14 +84,14 @@ const RetailerDashboard: React.FC = () => {
               <td className="p-4 font-medium text-pharma-600">ORD-9090</td>
               <td className="p-4 text-gray-500">Oct 24, 2023</td>
               <td className="p-4 text-gray-900">24 Items</td>
-              <td className="p-4 font-medium">$1,240.50</td>
+              <td className="p-4 font-medium">₹99,240</td>
               <td className="p-4"><span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold">Shipped</span></td>
             </tr>
             <tr className="hover:bg-gray-50">
               <td className="p-4 font-medium text-pharma-600">ORD-8821</td>
               <td className="p-4 text-gray-500">Oct 18, 2023</td>
               <td className="p-4 text-gray-900">12 Items</td>
-              <td className="p-4 font-medium">$450.00</td>
+              <td className="p-4 font-medium">₹36,000</td>
               <td className="p-4"><span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-bold">Delivered</span></td>
             </tr>
           </tbody>

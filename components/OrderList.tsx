@@ -1,14 +1,15 @@
+
 import React from 'react';
 import { Order } from '../types';
 import { Eye, Filter, Download } from 'lucide-react';
 
 const OrderList: React.FC = () => {
   const orders: Order[] = [
-    { id: 'ORD-24-001', retailer: 'City Pharma', amount: '$1,250.00', status: 'Pending', date: '2023-10-24', paymentMethod: 'Credit' },
-    { id: 'ORD-24-002', retailer: 'MediCare Plus', amount: '$450.50', status: 'Shipped', date: '2023-10-23', paymentMethod: 'Instant' },
-    { id: 'ORD-24-003', retailer: 'Green Cross', amount: '$2,890.00', status: 'Processing', date: '2023-10-23', paymentMethod: 'Credit' },
-    { id: 'ORD-24-004', retailer: 'Health First', amount: '$125.00', status: 'Delivered', date: '2023-10-22', paymentMethod: 'Instant' },
-    { id: 'ORD-24-005', retailer: 'City Pharma', amount: '$800.00', status: 'On Hold', date: '2023-10-22', paymentMethod: 'Credit' },
+    { id: 'ORD-24-001', retailer: 'City Pharma', amount: '₹1,00,000', status: 'Pending', date: '2023-10-24', paymentMethod: 'Credit' },
+    { id: 'ORD-24-002', retailer: 'MediCare Plus', amount: '₹36,040', status: 'Shipped', date: '2023-10-23', paymentMethod: 'Instant' },
+    { id: 'ORD-24-003', retailer: 'Green Cross', amount: '₹2,31,200', status: 'Processing', date: '2023-10-23', paymentMethod: 'Credit' },
+    { id: 'ORD-24-004', retailer: 'Health First', amount: '₹10,000', status: 'Delivered', date: '2023-10-22', paymentMethod: 'Instant' },
+    { id: 'ORD-24-005', retailer: 'City Pharma', amount: '₹64,000', status: 'On Hold', date: '2023-10-22', paymentMethod: 'Credit' },
   ];
 
   return (

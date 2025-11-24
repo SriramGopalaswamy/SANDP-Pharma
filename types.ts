@@ -23,16 +23,29 @@ export interface Order {
   paymentMethod: 'Credit' | 'Instant';
 }
 
+export interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 export enum Tab {
   // Admin
   DASHBOARD = 'dashboard',
   SPECIFICATION = 'specification',
   ORDERS = 'orders',
   INVENTORY = 'inventory',
-  // Retailer
+  
+  // Retailer & Distributor
   RETAILER_DASHBOARD = 'retailer_dashboard',
   CATALOG = 'catalog',
-  MY_ORDERS = 'my_orders'
+  MY_ORDERS = 'my_orders',
+  CHECKOUT = 'checkout',
+
+  // Customer (B2C)
+  B2C_HOME = 'b2c_home',
+  UPLOAD_RX = 'upload_rx'
 }
 
-export type UserRole = 'admin' | 'retailer' | null;
+export type UserRole = 'admin' | 'retailer' | 'distributor' | 'customer' | null;

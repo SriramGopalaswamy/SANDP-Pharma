@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Metric } from '../types';
 import { TrendingUp, TrendingDown, Users, DollarSign, Package, AlertTriangle, ArrowRight } from 'lucide-react';
@@ -5,20 +6,20 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 
 const AdminDashboard: React.FC = () => {
   const metrics: Metric[] = [
-    { label: 'Total Revenue (MTD)', value: '$142,390', trend: 12.5, status: 'up' },
+    { label: 'Total Revenue (MTD)', value: '₹1.14 Cr', trend: 12.5, status: 'up' },
     { label: 'Active Retailers', value: '452', trend: 8.2, status: 'up' },
     { label: 'Pending KYC', value: '18', trend: -2.4, status: 'down' },
     { label: 'Low Stock SKUs', value: '24', trend: 5.1, status: 'neutral' },
   ];
 
   const chartData = [
-    { name: 'Mon', revenue: 4000, orders: 24 },
-    { name: 'Tue', revenue: 3000, orders: 18 },
-    { name: 'Wed', revenue: 2000, orders: 12 },
-    { name: 'Thu', revenue: 2780, orders: 32 },
-    { name: 'Fri', revenue: 5890, orders: 45 },
-    { name: 'Sat', revenue: 8390, orders: 60 },
-    { name: 'Sun', revenue: 6490, orders: 50 },
+    { name: 'Mon', revenue: 320000, orders: 24 },
+    { name: 'Tue', revenue: 240000, orders: 18 },
+    { name: 'Wed', revenue: 160000, orders: 12 },
+    { name: 'Thu', revenue: 224000, orders: 32 },
+    { name: 'Fri', revenue: 471000, orders: 45 },
+    { name: 'Sat', revenue: 672000, orders: 60 },
+    { name: 'Sun', revenue: 519000, orders: 50 },
   ];
 
   return (
@@ -61,14 +62,14 @@ const AdminDashboard: React.FC = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-           <h3 className="text-lg font-bold text-gray-800 mb-6">Revenue Trend</h3>
+           <h3 className="text-lg font-bold text-gray-800 mb-6">Revenue Trend (INR)</h3>
            <div className="h-64">
              <ResponsiveContainer width="100%" height="100%">
                <LineChart data={chartData}>
                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#9ca3af'}} />
-                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#9ca3af'}} />
-                 <Tooltip />
+                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#9ca3af'}} tickFormatter={(val) => `₹${val/1000}k`} />
+                 <Tooltip formatter={(value) => [`₹${value}`, 'Revenue']} />
                  <Line type="monotone" dataKey="revenue" stroke="#0ea5e9" strokeWidth={3} dot={{r: 4}} activeDot={{r: 6}} />
                </LineChart>
              </ResponsiveContainer>
@@ -100,7 +101,7 @@ const AdminDashboard: React.FC = () => {
         <div className="divide-y divide-gray-100">
           {[
             { title: "KYC Verification", desc: "City Pharma uploaded new Drug License", time: "2h ago", type: "kyc" },
-            { title: "High Value Order", desc: "Order #9090 requires credit approval ($12k)", time: "4h ago", type: "credit" },
+            { title: "High Value Order", desc: "Order #9090 requires credit approval (₹9.6L)", time: "4h ago", type: "credit" },
             { title: "Stock Alert", desc: "Paracetamol 500mg below safety stock in DC-1", time: "5h ago", type: "stock" }
           ].map((item, i) => (
             <div key={i} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">

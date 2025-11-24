@@ -81,9 +81,9 @@ export const SPEC_SECTIONS: SpecSection[] = [
   "retailerId": "ret_123",
   "status": "PROCESSING",
   "items": [
-    { "sku": "SKU_PCM_500", "qty": 100, "price": 12.50 }
+    { "sku": "SKU_PCM_500", "qty": 100, "price": 125.00 }
   ],
-  "total": 1250.00,
+  "total": 12500.00,
   "paymentTerm": "NET_30"
 }
     `
@@ -131,7 +131,7 @@ export const SPEC_SECTIONS: SpecSection[] = [
     subsections: [
       {
         title: "Retailer Onboarding (Admin KYC Workflow)",
-        content: "1. **Queue Management**: Admin navigates to 'Dashboard > Pending Actions' or 'Retailers > Pending KYC' view.\n2. **Document Review**: Open retailer profile. View uploaded Drug License (DL) image side-by-side with OCR-extracted data.\n3. **Validation**: Manually verify:\n   - **License Number**: Matches government database format.\n   - **Legal Entity Name**: Matches the GSTIN/Business Tax ID provided.\n   - **Validity Date**: Must be > 3 months from today.\n   - **Address**: Matches shipping address proof.\n4. **Risk Assessment & Credit**:\n   - Check external credit score (integration via Experian/CIBIL).\n   - **Low Risk (Score > 750)**: Assign standard limit (e.g., $10k / ₹5L).\n   - **Medium/New**: Assign 'Prepaid Only' or low limit ($2k / ₹1L) for first 3 orders.\n   - **High Risk**: Reject or Request Security Deposit.\n5. **Approval Decision**:\n   - Click 'Approve': Triggers welcome email + SMS with login credentials. Status -> 'ACTIVE'.\n   - Click 'Reject': Select reason code (e.g., 'Blurred Image', 'Expired License') to notify retailer."
+        content: "1. **Queue Management**: Admin navigates to 'Dashboard > Pending Actions' or 'Retailers > Pending KYC' view.\n2. **Document Review**: Open retailer profile. View uploaded Drug License (DL) image side-by-side with OCR-extracted data.\n3. **Validation**: Manually verify:\n   - **License Number**: Matches government database format.\n   - **Legal Entity Name**: Matches the GSTIN/Business Tax ID provided.\n   - **Validity Date**: Must be > 3 months from today.\n   - **Address**: Matches shipping address proof.\n4. **Risk Assessment & Credit**:\n   - Check external credit score (integration via Experian/CIBIL).\n   - **Low Risk (Score > 750)**: Assign standard limit (e.g., ₹5L).\n   - **Medium/New**: Assign 'Prepaid Only' or low limit (₹1L) for first 3 orders.\n   - **High Risk**: Reject or Request Security Deposit.\n5. **Approval Decision**:\n   - Click 'Approve': Triggers welcome email + SMS with login credentials. Status -> 'ACTIVE'.\n   - Click 'Reject': Select reason code (e.g., 'Blurred Image', 'Expired License') to notify retailer."
       },
       {
         title: "Inventory Sync Issues",
@@ -155,9 +155,9 @@ export const SPEC_SECTIONS: SpecSection[] = [
     type: 'text',
     content: `Engine needs to be decoupled from Cart. 
     Rule Types: 
-    1. Cart Value: "5% off if Order > $500".
+    1. Cart Value: "5% off if Order > ₹50,000".
     2. SKU Specific: "Buy 10 Get 1 Free on Brand X".
-    3. Loyalty: 1 Point per $10 spent. Redeem 100 Points = $5 Credit.
+    3. Loyalty: 1 Point per ₹100 spent. Redeem 100 Points = ₹50 Credit.
     Expiration: Points expire rolling 12 months.`
   },
   {
