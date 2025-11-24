@@ -9,22 +9,26 @@ interface LoginScreenProps {
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   return (
-    <div className="min-h-screen bg-pharma-50 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
       <div className="mb-10 text-center">
-        <div className="inline-flex items-center justify-center h-16 w-16 rounded-xl bg-pharma-600 text-white mb-4 shadow-lg">
-          <span className="text-2xl font-bold">SP</span>
+        {/* S&P USA Branding Placeholder */}
+        <div className="mb-6 flex justify-center">
+             <img src="https://placehold.co/200x80/003366/ffffff?text=S%26P+USA" alt="S&P USA" className="h-20 shadow-lg rounded-lg" />
         </div>
-        <h1 className="text-4xl font-bold text-gray-900 tracking-tight">SANDP Pharma</h1>
-        <p className="text-gray-500 mt-2 text-lg">Unified Commerce Platform</p>
+        <h1 className="text-3xl font-light text-gray-600 tracking-wide uppercase">Unified Commerce Platform</h1>
+        <p className="text-gray-400 text-sm mt-2">Authorized Access Only</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl w-full">
         {/* Admin Card */}
         <button
           onClick={() => onLogin('admin')}
-          className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border-2 border-transparent hover:border-blue-500 transition-all group text-left"
+          className="bg-white p-6 rounded-xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-blue-500 transition-all group text-left relative overflow-hidden"
         >
-          <div className="h-10 w-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+             <ShieldCheck size={64} className="text-blue-900" />
+          </div>
+          <div className="h-10 w-10 bg-blue-50 text-blue-900 rounded-lg flex items-center justify-center mb-4">
             <ShieldCheck size={24} />
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-1">Admin Portal</h2>
@@ -36,9 +40,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
         {/* Distributor Card */}
         <button
           onClick={() => onLogin('distributor')}
-          className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border-2 border-transparent hover:border-purple-500 transition-all group text-left"
+          className="bg-white p-6 rounded-xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-purple-500 transition-all group text-left relative overflow-hidden"
         >
-          <div className="h-10 w-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+             <Truck size={64} className="text-purple-900" />
+          </div>
+          <div className="h-10 w-10 bg-purple-50 text-purple-900 rounded-lg flex items-center justify-center mb-4">
             <Truck size={24} />
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-1">Distributor (Bulk)</h2>
@@ -50,9 +57,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
         {/* Retailer Card */}
         <button
           onClick={() => onLogin('retailer')}
-          className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border-2 border-transparent hover:border-emerald-500 transition-all group text-left"
+          className="bg-white p-6 rounded-xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-emerald-500 transition-all group text-left relative overflow-hidden"
         >
-          <div className="h-10 w-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+             <Store size={64} className="text-emerald-900" />
+          </div>
+          <div className="h-10 w-10 bg-emerald-50 text-emerald-900 rounded-lg flex items-center justify-center mb-4">
             <Store size={24} />
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-1">Retailer App</h2>
@@ -64,19 +74,22 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
         {/* Customer Card */}
         <button
           onClick={() => onLogin('customer')}
-          className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border-2 border-transparent hover:border-orange-500 transition-all group text-left"
+          className="bg-white p-6 rounded-xl shadow-sm hover:shadow-xl border border-gray-100 hover:border-orange-500 transition-all group text-left relative overflow-hidden"
         >
-          <div className="h-10 w-10 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+             <User size={64} className="text-orange-900" />
+          </div>
+          <div className="h-10 w-10 bg-orange-50 text-orange-900 rounded-lg flex items-center justify-center mb-4">
             <User size={24} />
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-1">End Customer (B2C)</h2>
           <p className="text-sm text-gray-500">
-            B2C experience similar to 1mg/Pharmeasy.
+            D2C Experience for patients and consumers.
           </p>
         </button>
       </div>
       
-      <p className="mt-12 text-gray-400 text-sm">Select a role to simulate the experience.</p>
+      <p className="mt-12 text-gray-400 text-sm">© 2024 S&P Pharmaceuticals. All Rights Reserved.</p>
     </div>
   );
 };

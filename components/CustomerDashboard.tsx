@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, Upload, Percent, Heart, Activity, ShoppingBag } from 'lucide-react';
+import { Search, Upload, Percent, Heart, Activity, ShoppingBag, PlayCircle } from 'lucide-react';
 import { Tab } from '../types';
 
 interface CustomerDashboardProps {
@@ -10,71 +10,68 @@ interface CustomerDashboardProps {
 const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate }) => {
   return (
     <div className="space-y-8">
-      {/* Search Hero */}
-      <div className="bg-gradient-to-r from-teal-500 to-emerald-600 rounded-2xl p-8 text-white shadow-lg text-center md:text-left">
-        <div className="max-w-2xl">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">Your Health, Delivered.</h1>
-            <p className="text-emerald-50 mb-6 text-lg">Flat 20% off on your first order + Free Delivery</p>
-            
-            <div className="relative">
-                <input 
-                    type="text" 
-                    placeholder="Search for medicines, lab tests, doctors..." 
-                    className="w-full py-4 pl-12 pr-4 rounded-xl text-gray-800 shadow-lg focus:ring-4 focus:ring-emerald-300 focus:outline-none"
-                    onClick={() => onNavigate(Tab.CATALOG)}
-                />
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            </div>
-        </div>
+      {/* Brand Hero & Video */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 bg-[#003366] rounded-2xl p-8 text-white shadow-lg relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-4 opacity-10">
+                <Activity size={200} />
+             </div>
+             <div className="relative z-10 max-w-lg">
+                <h1 className="text-4xl font-light mb-4 leading-tight">Trusted by Doctors,<br/><span className="font-bold">Loved by You.</span></h1>
+                <p className="text-blue-100 mb-8 text-lg">Experience world-class pharmaceutical care with S&P USA.</p>
+                <div className="relative">
+                    <input 
+                        type="text" 
+                        placeholder="Search for medicines..." 
+                        className="w-full py-4 pl-12 pr-4 rounded-xl text-gray-800 shadow-lg focus:ring-4 focus:ring-blue-400 focus:outline-none"
+                        onClick={() => onNavigate(Tab.CATALOG)}
+                    />
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                </div>
+             </div>
+          </div>
+
+          <div className="bg-gray-900 rounded-2xl overflow-hidden relative group cursor-pointer">
+             <img src="https://placehold.co/400x300/333/999?text=Brand+Ambassador" alt="Brand Ambassador" className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity" />
+             <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+                <PlayCircle size={48} className="mb-2 drop-shadow-lg" />
+                <span className="font-bold tracking-wide">Our Mission</span>
+                <span className="text-xs text-gray-300">Watch the film</span>
+             </div>
+          </div>
       </div>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <button className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col items-center gap-2 text-center">
-            <div className="h-12 w-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
+        <button 
+            onClick={() => onNavigate(Tab.CATALOG)}
+            className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-300 transition-all flex flex-col items-center gap-2 text-center group"
+        >
+            <div className="h-12 w-12 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                 <ShoppingBag size={24} />
             </div>
             <span className="font-bold text-gray-700">Medicines</span>
         </button>
-        <button className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col items-center gap-2 text-center">
-            <div className="h-12 w-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+        <button className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-purple-300 transition-all flex flex-col items-center gap-2 text-center group">
+            <div className="h-12 w-12 bg-purple-50 text-purple-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Activity size={24} />
             </div>
             <span className="font-bold text-gray-700">Lab Tests</span>
         </button>
         <button 
             onClick={() => onNavigate(Tab.UPLOAD_RX)}
-            className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col items-center gap-2 text-center"
+            className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-teal-300 transition-all flex flex-col items-center gap-2 text-center group"
         >
-            <div className="h-12 w-12 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center">
+            <div className="h-12 w-12 bg-teal-50 text-teal-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Upload size={24} />
             </div>
             <span className="font-bold text-gray-700">Upload Rx</span>
         </button>
-        <button className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col items-center gap-2 text-center">
-            <div className="h-12 w-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
+        <button className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-red-300 transition-all flex flex-col items-center gap-2 text-center group">
+            <div className="h-12 w-12 bg-red-50 text-red-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Heart size={24} />
             </div>
             <span className="font-bold text-gray-700">Care Plan</span>
-        </button>
-      </div>
-
-      {/* Offers Banner */}
-      <div className="bg-orange-50 border border-orange-100 rounded-xl p-6 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-            <div className="h-12 w-12 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center">
-                <Percent size={28} />
-            </div>
-            <div>
-                <h3 className="font-bold text-orange-900 text-lg">Mega Health Festival</h3>
-                <p className="text-orange-700">Extra 15% cashback via Cred Pay</p>
-            </div>
-        </div>
-        <button 
-            onClick={() => onNavigate(Tab.CATALOG)}
-            className="px-6 py-2 bg-orange-500 text-white rounded-lg font-bold hover:bg-orange-600"
-        >
-            Shop Now
         </button>
       </div>
 
@@ -83,8 +80,8 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate }) => 
         <h2 className="text-xl font-bold text-gray-800 mb-4">Shop by Category</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {['Diabetes', 'Cardiac', 'Stomach', 'Pain Relief', 'Vitamins', 'Skin Care'].map((cat, i) => (
-                <div key={i} className="bg-white p-4 rounded-xl border border-gray-200 text-center hover:border-emerald-500 cursor-pointer transition-colors">
-                    <img src={`https://placehold.co/100x100?text=${cat.substring(0,2)}`} alt={cat} className="mx-auto mb-2 rounded-full h-16 w-16 opacity-80" />
+                <div key={i} className="bg-white p-4 rounded-xl border border-gray-200 text-center hover:border-blue-500 cursor-pointer transition-colors group">
+                    <img src={`https://placehold.co/100x100?text=${cat.substring(0,2)}`} alt={cat} className="mx-auto mb-2 rounded-full h-16 w-16 opacity-80 group-hover:opacity-100 transition-opacity" />
                     <span className="font-medium text-gray-700 text-sm">{cat}</span>
                 </div>
             ))}

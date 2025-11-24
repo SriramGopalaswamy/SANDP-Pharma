@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Tab, UserRole } from '../types';
-import { LayoutDashboard, FileText, ShoppingCart, Package, Settings, LogOut, Store, List, Truck, Home, Upload, Heart } from 'lucide-react';
+import { LayoutDashboard, FileText, ShoppingCart, Package, Settings, LogOut, Store, List, Truck, Home, Upload, Award } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: Tab;
@@ -23,12 +23,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, userRole, onL
     { id: Tab.RETAILER_DASHBOARD, label: 'My Store', icon: Store },
     { id: Tab.CATALOG, label: 'Catalog', icon: Package },
     { id: Tab.MY_ORDERS, label: 'My Orders', icon: List },
+    { id: Tab.LOYALTY, label: 'Loyalty Rewards', icon: Award },
   ];
 
   const distributorItems = [
-    { id: Tab.RETAILER_DASHBOARD, label: 'Overview', icon: LayoutDashboard }, // Re-using retailer dashboard route but rendering Distributor Dashboard
+    { id: Tab.RETAILER_DASHBOARD, label: 'Overview', icon: LayoutDashboard }, 
     { id: Tab.CATALOG, label: 'Bulk Catalog', icon: Truck },
     { id: Tab.MY_ORDERS, label: 'Bulk Orders', icon: List },
+    { id: Tab.LOYALTY, label: 'Partner Rewards', icon: Award },
   ];
 
   const customerItems = [
@@ -63,10 +65,15 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, userRole, onL
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-6 flex items-center justify-center border-b border-pharma-800">
-        <div className={`font-bold p-2 rounded shadow-lg ${getThemeColor()}`}>SP</div>
-        <span className="ml-3 text-xl font-bold tracking-wider">SANDP</span>
+    <div className="flex flex-col h-full bg-[#0a192f] text-white">
+      <div className="p-6 flex items-center justify-center border-b border-gray-800">
+        {/* S&P Branding Placeholder */}
+        <div className="flex flex-col items-center gap-2">
+            <div className="h-12 w-32 bg-white rounded flex items-center justify-center overflow-hidden">
+                <img src="https://placehold.co/150x50/003366/ffffff?text=S%26P+USA" alt="S&P Logo" className="object-cover" />
+            </div>
+            <span className="text-xs text-gray-400 tracking-widest uppercase">Pharmaceuticals</span>
+        </div>
       </div>
 
       <nav className="flex-1 px-4 py-6 space-y-2">
@@ -79,16 +86,16 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, userRole, onL
               onClick={() => onTabChange(item.id)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${getHoverClass(isActive)}`}
             >
-              <Icon size={20} className={isActive ? 'text-white' : 'text-pharma-300 group-hover:text-white'} />
+              <Icon size={20} className={isActive ? 'text-white' : 'text-gray-400 group-hover:text-white'} />
               <span className="font-medium">{item.label}</span>
             </button>
           );
         })}
       </nav>
 
-      <div className="p-4 border-t border-pharma-800 space-y-2">
+      <div className="p-4 border-t border-gray-800 space-y-2">
          {userRole !== 'customer' && (
-            <button className="w-full flex items-center gap-3 px-4 py-3 text-pharma-300 hover:text-white hover:bg-pharma-800 rounded-lg transition-colors">
+            <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors">
                 <Settings size={20} />
                 <span>Settings</span>
             </button>

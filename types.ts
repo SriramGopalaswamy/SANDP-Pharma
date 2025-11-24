@@ -42,6 +42,7 @@ export enum Tab {
   CATALOG = 'catalog',
   MY_ORDERS = 'my_orders',
   CHECKOUT = 'checkout',
+  LOYALTY = 'loyalty',
 
   // Customer (B2C)
   B2C_HOME = 'b2c_home',

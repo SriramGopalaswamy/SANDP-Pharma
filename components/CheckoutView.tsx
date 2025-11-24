@@ -1,22 +1,31 @@
 
 import React, { useState } from 'react';
-import { CartItem } from '../types';
-import { Trash2, CreditCard, Building, CheckCircle, AlertCircle, Lock } from 'lucide-react';
+import { CartItem, UserRole } from '../types';
+import { Trash2, CreditCard, Building, CheckCircle, AlertCircle, Lock, Wallet, Banknote } from 'lucide-react';
 
 interface CheckoutViewProps {
   cart: CartItem[];
   onRemoveItem: (productId: number) => void;
   onClearCart: () => void;
+  userRole: UserRole;
 }
 
-const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onRemoveItem, onClearCart }) => {
+const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onRemoveItem, onClearCart, userRole }) => {
   const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'credit_terms' | 'upi' | 'card'>('credit_terms');
+  const [paymentMethod, setPaymentMethod] = useState<string>('');
+
+  const isB2C = userRole === 'customer';
 
   const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const gst = subtotal * 0.18;
   const total = subtotal + gst;
+
+  // Set default method based on role if not set
+  if (!paymentMethod) {
+      if (isB2C) setPaymentMethod('card');
+      else setPaymentMethod('credit_terms');
+  }
 
   const handlePayment = () => {
     setIsPaymentProcessing(true);
@@ -38,8 +47,8 @@ const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onRemoveItem, onClear
         </div>
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-900">Order Placed Successfully!</h2>
-          <p className="text-gray-500 mt-2">Order ID: #ORD-24-9991</p>
-          <p className="text-gray-500">You will receive an SMS confirmation shortly.</p>
+          <p className="text-gray-500 mt-2">Order ID: #{Math.floor(Math.random() * 10000)}</p>
+          <p className="text-gray-500">Thank you for choosing S&P Pharma.</p>
         </div>
       </div>
     );
@@ -52,7 +61,7 @@ const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onRemoveItem, onClear
            <CreditCard size={48} className="text-gray-400" />
         </div>
         <h2 className="text-2xl font-bold text-gray-800">Your Cart is Empty</h2>
-        <p className="text-gray-500 mt-2">Browse the catalog to add medicines.</p>
+        <p className="text-gray-500 mt-2">Browse our catalog to add products.</p>
       </div>
     );
   }
@@ -121,21 +130,44 @@ const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onRemoveItem, onClear
           </h3>
           
           <div className="space-y-2">
+            
+            {/* B2B Only Options */}
+            {!isB2C && (
+                <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                paymentMethod === 'credit_terms' ? 'border-pharma-500 bg-pharma-50 ring-1 ring-pharma-500' : 'border-gray-200 hover:border-gray-300'
+                }`}>
+                <input 
+                    type="radio" 
+                    name="payment" 
+                    checked={paymentMethod === 'credit_terms'} 
+                    onChange={() => setPaymentMethod('credit_terms')}
+                    className="text-pharma-600"
+                />
+                <div className="flex-1">
+                    <div className="font-medium text-gray-900 flex items-center gap-2">
+                    <Building size={18} /> Net Terms (Credit)
+                    </div>
+                    <div className="text-xs text-gray-500">Invoice payable in 30 days</div>
+                </div>
+                </label>
+            )}
+
+            {/* Common / B2C Options */}
             <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
-              paymentMethod === 'credit_terms' ? 'border-pharma-500 bg-pharma-50 ring-1 ring-pharma-500' : 'border-gray-200 hover:border-gray-300'
+              paymentMethod === 'card' ? 'border-pharma-500 bg-pharma-50 ring-1 ring-pharma-500' : 'border-gray-200 hover:border-gray-300'
             }`}>
               <input 
                 type="radio" 
                 name="payment" 
-                checked={paymentMethod === 'credit_terms'} 
-                onChange={() => setPaymentMethod('credit_terms')}
+                checked={paymentMethod === 'card'} 
+                onChange={() => setPaymentMethod('card')}
                 className="text-pharma-600"
               />
               <div className="flex-1">
                 <div className="font-medium text-gray-900 flex items-center gap-2">
-                  <Building size={18} /> Net Terms (Credit)
+                  <CreditCard size={18} /> Credit / Debit Card
                 </div>
-                <div className="text-xs text-gray-500">Available Limit: ₹9,96,000</div>
+                <div className="text-xs text-gray-500">Visa, Mastercard, Amex</div>
               </div>
             </label>
 
@@ -151,11 +183,33 @@ const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onRemoveItem, onClear
               />
               <div className="flex-1">
                 <div className="font-medium text-gray-900 flex items-center gap-2">
-                  <CreditCard size={18} /> UPI / Razorpay
+                  <Wallet size={18} /> UPI
                 </div>
-                <div className="text-xs text-gray-500">Google Pay, PhonePe, Paytm</div>
+                <div className="text-xs text-gray-500">Google Pay, PhonePe</div>
               </div>
             </label>
+
+             {/* B2C Only Options */}
+             {isB2C && (
+                <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                paymentMethod === 'cod' ? 'border-pharma-500 bg-pharma-50 ring-1 ring-pharma-500' : 'border-gray-200 hover:border-gray-300'
+                }`}>
+                <input 
+                    type="radio" 
+                    name="payment" 
+                    checked={paymentMethod === 'cod'} 
+                    onChange={() => setPaymentMethod('cod')}
+                    className="text-pharma-600"
+                />
+                <div className="flex-1">
+                    <div className="font-medium text-gray-900 flex items-center gap-2">
+                    <Banknote size={18} /> Cash on Delivery
+                    </div>
+                    <div className="text-xs text-gray-500">Pay when you receive</div>
+                </div>
+                </label>
+             )}
+
           </div>
 
           <button 
@@ -166,7 +220,7 @@ const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onRemoveItem, onClear
             }`}
           >
             {isPaymentProcessing ? (
-              <>Processing Payment...</>
+              <>Processing...</>
             ) : (
               <>Pay ₹{total.toFixed(2)}</>
             )}
@@ -174,7 +228,7 @@ const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onRemoveItem, onClear
           
           <div className="flex items-center justify-center gap-1 text-xs text-gray-400 mt-2">
             <AlertCircle size={12} />
-            <span>Secure 256-bit SSL Encrypted</span>
+            <span>Secured by Stripe / Razorpay</span>
           </div>
         </div>
       </div>

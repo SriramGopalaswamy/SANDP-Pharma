@@ -12,6 +12,7 @@ import CustomerDashboard from './components/CustomerDashboard';
 import ProductCatalog from './components/ProductCatalog';
 import LoginScreen from './components/LoginScreen';
 import CheckoutView from './components/CheckoutView';
+import LoyaltyView from './components/LoyaltyView';
 import { Menu, ShoppingCart, UploadCloud } from 'lucide-react';
 
 export default function App() {
@@ -72,6 +73,9 @@ export default function App() {
       case Tab.RETAILER_DASHBOARD:
         return userRole === 'distributor' ? <DistributorDashboard /> : <RetailerDashboard />;
       
+      case Tab.LOYALTY:
+        return <LoyaltyView userRole={userRole} />;
+
       // Customer
       case Tab.B2C_HOME: return <CustomerDashboard onNavigate={setActiveTab} />;
       case Tab.UPLOAD_RX: 
@@ -90,7 +94,7 @@ export default function App() {
       case Tab.MY_ORDERS:
         return <OrderList />;
       case Tab.CHECKOUT:
-        return <CheckoutView cart={cart} onRemoveItem={removeFromCart} onClearCart={clearCart} />;
+        return <CheckoutView cart={cart} onRemoveItem={removeFromCart} onClearCart={clearCart} userRole={userRole} />;
 
       default:
         return <AdminDashboard />;
@@ -104,7 +108,7 @@ export default function App() {
   // Helper for Role Display info
   const getRoleInfo = () => {
       switch(userRole) {
-          case 'admin': return { name: 'Mike Admin', label: 'Head of Ops', badge: 'MA', color: 'bg-pharma-100 text-pharma-700' };
+          case 'admin': return { name: 'Mike Admin', label: 'Head of Ops', badge: 'MA', color: 'bg-blue-100 text-blue-700' };
           case 'retailer': return { name: 'Raj StoreOwner', label: 'City Pharma', badge: 'RJ', color: 'bg-emerald-100 text-emerald-700' };
           case 'distributor': return { name: 'Global Supply', label: 'Bulk Partner', badge: 'GS', color: 'bg-purple-100 text-purple-700' };
           case 'customer': return { name: 'Anita Kumar', label: 'Prime Member', badge: 'AK', color: 'bg-teal-100 text-teal-700' };
@@ -128,7 +132,7 @@ export default function App() {
       <aside 
         className={`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } fixed inset-y-0 left-0 z-30 w-64 bg-pharma-900 text-white transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 shadow-xl`}
+        } fixed inset-y-0 left-0 z-30 w-64 bg-gray-900 text-white transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 shadow-xl`}
       >
         <Sidebar 
           activeTab={activeTab} 
@@ -149,11 +153,15 @@ export default function App() {
             >
               <Menu size={24} />
             </button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800 tracking-tight">SANDP Pharma</h1>
-              <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">
-                {userRole === 'admin' ? 'Admin & Spec Portal' : `${userRole.charAt(0).toUpperCase() + userRole.slice(1)} Portal`}
-              </p>
+            <div className="flex items-center gap-2">
+              <div className="lg:hidden h-8 w-8 bg-blue-900 text-white flex items-center justify-center font-bold rounded">SP</div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-800 tracking-tight">
+                  {activeTab === Tab.LOYALTY ? 'Rewards Program' : 
+                   activeTab === Tab.CATALOG ? 'Product Catalog' :
+                   activeTab === Tab.CHECKOUT ? 'Secure Checkout' : 'Dashboard'}
+                </h1>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-6">
