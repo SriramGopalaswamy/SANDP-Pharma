@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Tab, UserRole } from '../types';
-import { LayoutDashboard, FileText, ShoppingCart, Package, Settings, LogOut, Store, List, Truck, Home, Upload, Award, Gift } from 'lucide-react';
+import { LayoutDashboard, FileText, ShoppingCart, Package, Settings, LogOut, Store, List, Truck, Home, Upload, Award, Gift, Sun, UserCheck } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: Tab;
@@ -24,14 +24,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, userRole, onL
     { id: Tab.RETAILER_DASHBOARD, label: 'My Store', icon: Store },
     { id: Tab.CATALOG, label: 'Catalog', icon: Package },
     { id: Tab.MY_ORDERS, label: 'My Orders', icon: List },
-    { id: Tab.LOYALTY, label: 'Loyalty Rewards', icon: Award },
+    { id: Tab.SUNNY_CLUB, label: 'Sunny Club', icon: Sun }, // Replaced basic Loyalty
   ];
 
   const distributorItems = [
     { id: Tab.RETAILER_DASHBOARD, label: 'Overview', icon: LayoutDashboard }, 
     { id: Tab.CATALOG, label: 'Bulk Catalog', icon: Truck },
     { id: Tab.MY_ORDERS, label: 'Bulk Orders', icon: List },
-    { id: Tab.LOYALTY, label: 'Partner Rewards', icon: Award },
+    { id: Tab.SUNNY_CLUB, label: 'Partner Rewards', icon: Award },
   ];
 
   const customerItems = [
@@ -42,10 +42,16 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, userRole, onL
     { id: Tab.LOYALTY, label: 'Rewards', icon: Award },
   ];
 
+  const deliveryItems = [
+    { id: Tab.MY_ORDERS, label: 'Assigned Deliveries', icon: Truck },
+    { id: Tab.RETAILER_DASHBOARD, label: 'Route Map', icon: LayoutDashboard },
+  ];
+
   let menuItems = adminItems;
   if (userRole === 'retailer') menuItems = retailerItems;
   if (userRole === 'distributor') menuItems = distributorItems;
   if (userRole === 'customer') menuItems = customerItems;
+  if (userRole === 'delivery' || userRole === 'stockist') menuItems = deliveryItems;
 
   // Visual Theme based on role
   const getThemeColor = () => {
@@ -61,6 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, userRole, onL
     if (isActive) {
         if (userRole === 'customer') return 'bg-teal-600 text-white';
         if (userRole === 'distributor') return 'bg-purple-600 text-white';
+        if (userRole === 'retailer' && activeTab === Tab.SUNNY_CLUB) return 'bg-orange-500 text-white';
         return 'bg-pharma-600 text-white';
     }
     return 'text-pharma-100 hover:bg-pharma-800 hover:text-white';

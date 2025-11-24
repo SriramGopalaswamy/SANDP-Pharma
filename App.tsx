@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Tab, UserRole, CartItem, LoyaltyHistoryItem } from './types';
+import { Tab, UserRole, CartItem, LoyaltyHistoryItem, Wish, ScratchCard } from './types';
 import Sidebar from './components/Sidebar';
 import AdminDashboard from './components/AdminDashboard';
 import AdminLoyaltyManager from './components/AdminLoyaltyManager';
@@ -13,6 +13,7 @@ import CustomerDashboard from './components/CustomerDashboard';
 import ProductCatalog from './components/ProductCatalog';
 import LoginScreen from './components/LoginScreen';
 import CheckoutView from './components/CheckoutView';
+import SunnyClubView from './components/SunnyClubView';
 import LoyaltyView from './components/LoyaltyView';
 import { Menu, ShoppingCart, UploadCloud } from 'lucide-react';
 
@@ -24,23 +25,37 @@ export default function App() {
   // Cart State
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  // Persistent Loyalty State for all roles
-  const [userPoints, setUserPoints] = useState<Record<string, number>>({
-    retailer: 850,
-    distributor: 15400,
+  // --- SUNNY CLUB STATE ---
+  // Persistent Loyalty State for all roles (Reward Coins)
+  const [userCoins, setUserCoins] = useState<Record<string, number>>({
+    retailer: 12500, // Includes welcome bonus logic conceptually
+    distributor: 154000,
     customer: 240,
     admin: 0
   });
 
+  // Wishes State
+  const [wishes, setWishes] = useState<Wish[]>([
+    { id: '1', title: 'Royal Enfield Classic 350', targetAmount: 250000, currentAmount: 12500, image: 'https://placehold.co/200?text=Bike', status: 'Active' },
+    { id: '2', title: 'Family Trip to Dubai', targetAmount: 500000, currentAmount: 0, image: 'https://placehold.co/200?text=Dubai', status: 'Active' }
+  ]);
+
+  // Scratch Cards
+  const [scratchCards, setScratchCards] = useState<ScratchCard[]>([
+    { id: 'sc_1', status: 'Unopened', dateEarned: 'Oct 25' },
+    { id: 'sc_2', status: 'Opened', reward: '500 Coins', dateEarned: 'Oct 20' }
+  ]);
+
+  // Free Goods Ledger Balance
+  const [freeGoodsLedger, setFreeGoodsLedger] = useState(4000);
+
   const [loyaltyHistory, setLoyaltyHistory] = useState<LoyaltyHistoryItem[]>([
-    { id: 1, title: 'Order #ORD-9090', date: 'Oct 24', points: 120, type: 'earn' },
-    { id: 2, title: 'Redeemed Voucher', date: 'Oct 20', points: 500, type: 'burn' },
-    { id: 3, title: 'Order #ORD-8821', date: 'Oct 18', points: 85, type: 'earn' },
-    { id: 4, title: 'Tier Bonus', date: 'Oct 01', points: 50, type: 'earn' },
+    { id: 1, title: 'Welcome Bonus', date: 'Oct 24', points: 10000, type: 'earn' },
+    { id: 2, title: 'Order #ORD-9090', date: 'Oct 24', points: 120, type: 'earn' },
   ]);
 
   // Derived state for current user
-  const currentPoints = userRole ? userPoints[userRole] : 0;
+  const currentCoins = userRole ? userCoins[userRole] : 0;
 
   const handleLogin = (role: UserRole) => {
     setUserRole(role);
@@ -48,6 +63,9 @@ export default function App() {
     if (role === 'admin') setActiveTab(Tab.DASHBOARD);
     else if (role === 'customer') setActiveTab(Tab.B2C_HOME);
     else setActiveTab(Tab.RETAILER_DASHBOARD);
+
+    // Simulate Welcome Bonus if New User (Conceptually)
+    // In a real app, this checks DB. Here we just assume "Retailer" has it in init state.
   };
 
   const handleLogout = () => {
@@ -84,6 +102,13 @@ export default function App() {
   const handleEarnPoints = (amount: number) => {
     if (!userRole) return;
     
+    // 1. Add Coins
+    setUserCoins(prev => ({
+      ...prev,
+      [userRole]: (prev[userRole] || 0) + amount
+    }));
+
+    // 2. Add History
     const newHistoryItem: LoyaltyHistoryItem = {
       id: Date.now(),
       title: `Order #${Math.floor(Math.random() * 9000) + 1000}`,
@@ -91,42 +116,49 @@ export default function App() {
       points: amount,
       type: 'earn'
     };
-    
-    setUserPoints(prev => ({
-      ...prev,
-      [userRole]: (prev[userRole] || 0) + amount
-    }));
-    
     setLoyaltyHistory(prev => [newHistoryItem, ...prev]);
+
+    // 3. Update Wishes Progress (Auto-allocation logic)
+    setWishes(prev => prev.map(w => ({
+        ...w,
+        currentAmount: w.currentAmount + amount // Simplified: 100% allocation to all active wishes for demo
+    })));
+
+    // 4. Issue Scratch Card
+    setScratchCards(prev => [{ id: `sc_${Date.now()}`, status: 'Unopened', dateEarned: 'Just Now' }, ...prev]);
   };
 
-  const handleRedeemPoints = (cost: number, rewardTitle: string) => {
-    if (!userRole) return false;
-    const balance = userPoints[userRole] || 0;
+  const handleSignBond = (wishId: string) => {
+    setWishes(prev => prev.map(w => w.id === wishId ? { ...w, bondSigned: true } : w));
+  };
 
-    if (balance >= cost) {
-      const newHistoryItem: LoyaltyHistoryItem = {
-        id: Date.now(),
-        title: `Redeemed: ${rewardTitle}`,
-        date: 'Just Now',
-        points: cost,
-        type: 'burn'
-      };
-      
-      setUserPoints(prev => ({
-        ...prev,
-        [userRole]: balance - cost
-      }));
-      
-      setLoyaltyHistory(prev => [newHistoryItem, ...prev]);
-      return true;
+  const handleScratch = (cardId: string) => {
+    // Random reward logic
+    const rewards = ['100 Coins', '500 Coins', '1% Cashback', 'Gold Coin Chance'];
+    const reward = rewards[Math.floor(Math.random() * rewards.length)];
+
+    setScratchCards(prev => prev.map(c => c.id === cardId ? { ...c, status: 'Opened', reward } : c));
+    
+    // If coins won, add to balance
+    if (reward.includes('Coins')) {
+        const amt = parseInt(reward);
+        if (!isNaN(amt) && userRole) {
+            setUserCoins(prev => ({ ...prev, [userRole]: prev[userRole] + amt }));
+        }
     }
-    return false;
+  };
+
+  const handleRedeemMagicItem = (cost: number, itemName: string) => {
+      if (!userRole) return;
+      if (currentCoins >= cost) {
+          setUserCoins(prev => ({ ...prev, [userRole]: prev[userRole] - cost }));
+          alert(`Success! You redeemed ${itemName}.`);
+      }
   };
 
   // Admin Handler to adjust points for other users
   const handleAdminAdjustPoints = (targetRole: string, amount: number, type: 'add' | 'sub') => {
-    setUserPoints(prev => ({
+    setUserCoins(prev => ({
       ...prev,
       [targetRole]: type === 'add' 
         ? (prev[targetRole] || 0) + amount 
@@ -147,21 +179,27 @@ export default function App() {
       // Retailer / Distributor Shared Route Key
       case Tab.RETAILER_DASHBOARD:
         return userRole === 'distributor' 
-          ? <DistributorDashboard points={currentPoints} /> 
-          : <RetailerDashboard points={currentPoints} />;
+          ? <DistributorDashboard points={currentCoins} /> 
+          : <RetailerDashboard points={currentCoins} />;
       
-      case Tab.LOYALTY:
+      // NEW SUNNY CLUB VIEW (Replaces generic Loyalty for B2B)
+      case Tab.SUNNY_CLUB:
         return (
-          <LoyaltyView 
-            userRole={userRole} 
-            points={currentPoints} 
-            history={loyaltyHistory}
-            onRedeem={handleRedeemPoints}
+          <SunnyClubView 
+            userRole={userRole}
+            coins={currentCoins}
+            wishes={wishes}
+            scratchCards={scratchCards}
+            freeGoodsBalance={freeGoodsLedger}
+            onSignBond={handleSignBond}
+            onScratch={handleScratch}
+            onRedeem={handleRedeemMagicItem}
           />
         );
 
       // Customer
       case Tab.B2C_HOME: return <CustomerDashboard onNavigate={setActiveTab} />;
+      case Tab.LOYALTY: return <LoyaltyView userRole={userRole} points={currentCoins} history={loyaltyHistory} onRedeem={() => true} />; // Keep simple view for B2C
       case Tab.UPLOAD_RX: 
         return (
             <div className="flex flex-col items-center justify-center h-[50vh] border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 m-4">
@@ -204,7 +242,7 @@ export default function App() {
           case 'retailer': return { name: 'Raj StoreOwner', label: 'City Pharma', badge: 'RJ', color: 'bg-emerald-100 text-emerald-700' };
           case 'distributor': return { name: 'Global Supply', label: 'Bulk Partner', badge: 'GS', color: 'bg-purple-100 text-purple-700' };
           case 'customer': return { name: 'Anita Kumar', label: 'Prime Member', badge: 'AK', color: 'bg-teal-100 text-teal-700' };
-          default: return { name: 'User', label: '', badge: 'U', color: 'bg-gray-100' };
+          default: return { name: 'User', label: 'Staff', badge: 'U', color: 'bg-gray-100' };
       }
   };
 
@@ -251,7 +289,7 @@ export default function App() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-800 tracking-tight hidden md:block">
-                  {activeTab === Tab.LOYALTY || activeTab === Tab.LOYALTY_MANAGEMENT ? 'S&P Rewards' : 
+                  {activeTab === Tab.SUNNY_CLUB ? 'Sunny Club Rewards' : 
                    activeTab === Tab.CATALOG ? 'Product Catalog' :
                    activeTab === Tab.CHECKOUT ? 'Secure Checkout' : 'Dashboard'}
                 </h1>

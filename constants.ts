@@ -16,7 +16,7 @@ export const SPEC_SECTIONS: SpecSection[] = [
     type: 'text',
     content: `SANDP Pharma aims to modernize the B2B pharmaceutical supply chain by launching a centralized e-commerce platform hosted on AWS. This platform will serve licensed retailers and internal ops, replacing fragmented phone/WhatsApp ordering with a streamlined digital experience. 
     
-    For retailers, this provides real-time stock visibility, credit management, and faster fulfillment. For SANDP, it drives higher AOV through smart suggestions, reduces operational overhead, and ensures compliance. The platform differentiates itself via: (1) Real-time multi-warehouse stock sync, (2) Integrated credit line management, (3) Smart drug substitution logic, (4) Automated compliance checks (DEA/License), and (5) A robust loyalty engine.`
+    For retailers, this provides real-time stock visibility, credit management, and faster fulfillment. For SANDP, it drives higher AOV through smart suggestions, reduces operational overhead, and ensures compliance. The platform differentiates itself via: (1) Real-time multi-warehouse stock sync, (2) Integrated credit line management, (3) Smart drug substitution logic, (4) Automated compliance checks (DEA/License), and (5) The S&P Sunny Club Loyalty System.`
   },
   {
     id: 'personas',
@@ -37,8 +37,8 @@ export const SPEC_SECTIONS: SpecSection[] = [
         content: "Goals: Order throughput, catalog accuracy. Pain: Manual KYC verification. Task: Reviews uploaded Drug License, approves retailer account."
       },
       {
-        title: "Sarah (Finance)",
-        content: "Goals: Reconciliation, credit risk mitigation. Task: Sets credit limits for new accounts, reviews aged receivables."
+        title: "Delivery Agent",
+        content: "Goals: Efficient routing. Task: Scans package at doorstep, triggers OTP to customer for delivery confirmation."
       }
     ]
   },
@@ -59,38 +59,70 @@ export const SPEC_SECTIONS: SpecSection[] = [
     ]
   },
   {
-    id: 'data-model',
-    title: '4. Data Model',
-    type: 'code',
-    content: `
-// Core Entities
-
-// Retailer
-{
-  "id": "ret_123",
-  "businessName": "City Pharma",
-  "licenseNumber": "DL-KA-01-2024",
-  "kycStatus": "APPROVED",
-  "creditLimit": 500000,
-  "availableCredit": 120000
-}
-
-// Order
-{
-  "id": "ord_999",
-  "retailerId": "ret_123",
-  "status": "PROCESSING",
-  "items": [
-    { "sku": "SKU_PCM_500", "qty": 100, "price": 125.00 }
-  ],
-  "total": 12500.00,
-  "paymentTerm": "NET_30"
-}
-    `
+    id: 'sunny-club',
+    title: '10. S&P Sunny Club Loyalty System',
+    type: 'mixed',
+    content: 'Comprehensive Loyalty & Rewards Module:',
+    subsections: [
+      {
+        title: "1. Welcome & Earning",
+        content: "- Welcome Bonus: 10,000 Reward Coins on registration.\n- Earning: 1 Coin per ₹1 spent (PTR value)."
+      },
+      {
+        title: "2. Redemption Logic (Magic Store)",
+        content: "- Threshold: First redemption ONLY after accumulating 50,000 coins.\n- Partial redemption allowed after threshold met.\n- Magic Store: Exclusive catalog for point redemption (FMCG, Gold coins)."
+      },
+      {
+        title: "3. Scratch Card System",
+        content: "- Trigger: 1 Card generated per order.\n- Wallet: Stores Unopened/Opened/Expired cards.\n- Pool: Cashback, FMCG gifts, Gold Coin chances."
+      },
+      {
+        title: "4. Free Goods System",
+        content: "- Rule: For every cumulative ₹2,000 (ex-GST), add ₹2,000 equivalent GST-free goods.\n- Ledger: Maintains a 'Free Goods' balance.\n- fulfillment: Auto-added to next shipment."
+      },
+      {
+        title: "5. Hero's Wish Program",
+        content: "- Wish Gallery: Predefined luxury items or Custom Upload.\n- Digital Wish Bond: Generated document with Dual OTP e-signature.\n- Tracking: Monthly/Yearly targets vs Progress %.\n- Auto-complete: Triggered when target achieved."
+      }
+    ]
+  },
+  {
+    id: 'compliance',
+    title: '11. Compliance & Workflows',
+    type: 'list',
+    content: [
+      "Rx Compliance: Mandatory prescription upload for Rx items. Block checkout until file attached. Admin verification queue.",
+      "Distributor Workflow: Admin creates Distributor -> Distributor onboards Retailers -> Consolidated Booking -> Split Delivery.",
+      "Order State Machine: PLACED -> VERIFIED -> PACKED -> SHIPPED -> OUT_FOR_DELIVERY -> DELIVERED (OTP Required) -> RETURNED.",
+      "Multi-Layer Wallet: Segregated balances for Reward Coins, Scratch Cards, and Free Goods Ledger."
+    ]
+  },
+  {
+    id: 'notifications',
+    title: '12. Push Notification Triggers',
+    type: 'list',
+    content: [
+      "Welcome Bonus Credited (10k coins)",
+      "New Scratch Card received",
+      "Free Goods credited to ledger",
+      "Wish Milestones (25%, 50%, 75%, 100%)",
+      "Order Status Updates (Packed, Shipped)",
+      "Loyalty Expiry Reminders"
+    ]
+  },
+  {
+    id: 'tracking',
+    title: '13. Logistics & Tracking',
+    type: 'list',
+    content: [
+      "Real-time Inventory: Per-SKU stock at warehouse + Distributor override capability.",
+      "Live Tracking: Map integration for 'Out for Delivery' state.",
+      "Webhooks: Integration with courier APIs for status updates."
+    ]
   },
   {
     id: 'architecture',
-    title: '5. System Architecture',
+    title: '14. System Architecture',
     type: 'list',
     content: [
       "Frontend: React (Web Admin) + React Native (Mobile App) -> Hosted on AWS Amplify / S3 + CloudFront.",
@@ -100,124 +132,6 @@ export const SPEC_SECTIONS: SpecSection[] = [
       "Search: Amazon OpenSearch Service (Catalog, fuzzy search, substitutions).",
       "Async Ops: Amazon EventBridge (Order placement events) -> SQS -> Lambda (ERP Sync, Notifications).",
       "Storage: S3 (Product Images, KYC Documents - Encrypted)."
-    ]
-  },
-  {
-    id: 'integration',
-    title: '6. Integration Spec',
-    type: 'list',
-    content: [
-      "Payment Gateway: Stripe or Razorpay. Integration Mode: Tokenized (PCI-DSS SAQ A). Webhooks for payment success/fail.",
-      "Logistics: Shiprocket/EasyPost API. Push tracking updates to SNS -> Retailer App Push Notification.",
-      "ERP: Inbound Inventory (Webhooks/File Drop), Outbound Orders (SQS Queue to prevent throttling)."
-    ]
-  },
-  {
-    id: 'security',
-    title: '7. Security & Compliance',
-    type: 'list',
-    content: [
-      "Auth: AWS Cognito with MFA enforced for Admin roles.",
-      "Data: TLS 1.2+ in transit. KMS encryption for S3 (KYC docs) and DB at rest.",
-      "Access: Role-Based Access Control (RBAC) - Store Manager vs Pharmacist.",
-      "Audit: AWS CloudTrail for infra, DynamoDB table for application-level audit logs (Who changed the credit limit?)."
-    ]
-  },
-  {
-    id: 'runbook',
-    title: '8. Admin & Ops Runbook',
-    type: 'mixed',
-    content: 'Standard Operating Procedures:',
-    subsections: [
-      {
-        title: "Retailer Onboarding (Admin KYC Workflow)",
-        content: `**Step 1: Queue & Document Intake (View: Admin Dashboard > 'Pending Approvals')**
-        - Admin selects a retailer from the 'KYC Pending' list.
-        - System displays split-screen view: Uploaded Documents (Left) vs. Data Entry Form (Right).
-
-        **Step 2: Drug License (DL) & Compliance Validation**
-        - **Document Validity**: Ensure DL (Forms 20/21) is clear, un-cropped, and legible.
-        - **Field Level Checks**:
-           1. **License Number**: Cross-reference format (e.g., KA-B32-...) with State Drug Controller database.
-           2. **Firm Name**: Must strictly match the GSTIN/PAN registration name.
-           3. **Competent Person**: Verify the Pharmacist-in-Charge name is listed.
-           4. **Validity**: If expiring < 90 days, Approve with 'Provisional' status and set reminder.
-           5. **Address**: GPS coordinates of shop (from app) should match DL address vicinity.
-
-        **Step 3: Credit Risk Assessment (Tool: Finance Risk Engine)**
-        - **Prepaid Tier**: Default for all new accounts (< 3 months vintage). Payment via UPI/Card only.
-        - **Credit Tier 1 (₹1L - ₹5L)**:
-           - Criteria: 6+ months of Prepaid history OR Valid Bank Reference Letter.
-           - Terms: Net 7 Days.
-        - **Credit Tier 2 (₹5L+)**:
-           - Criteria: 3+ Years in business + External Credit Score > 750 + Physical Shop Visit verification.
-           - Terms: Net 21 Days.
-
-        **Step 4: Final Decision & Notification**
-        - **Approve**: Generates ERP Customer ID, sends Welcome Email/SMS, and enables 'Order' tab.
-        - **Reject**: Admin selects reason (e.g., 'Name Mismatch', 'Blurred Doc'). System sends 'Resubmit' link to retailer.`
-      },
-      {
-        title: "Inventory Sync Issues",
-        content: "If Shopify/ERP mismatch > 5%: Pause ordering for SKU. Trigger full re-sync job via Admin Panel."
-      }
-    ]
-  },
-  {
-    id: 'kpis',
-    title: '9. Monitoring & KPIs',
-    type: 'list',
-    content: [
-      "Business: GMV (Gross Merchandise Value), AOV, Order Frequency, Credit Utilization %.",
-      "Operational: Order-to-Ship Time, Fill Rate (Ordered vs Delivered).",
-      "Technical: API Latency (p99 < 500ms), 5xx Error Rate (< 0.1%)."
-    ]
-  },
-  {
-    id: 'loyalty',
-    title: '10. Loyalty & Promotions',
-    type: 'text',
-    content: `Engine needs to be decoupled from Cart. 
-    Rule Types: 
-    1. Cart Value: "5% off if Order > ₹50,000".
-    2. SKU Specific: "Buy 10 Get 1 Free on Brand X".
-    3. Loyalty: 1 Point per ₹100 spent. Redeem 100 Points = ₹50 Credit.
-    Expiration: Points expire rolling 12 months.`
-  },
-  {
-    id: 'mobile',
-    title: '11. Mobile UX Notes',
-    type: 'list',
-    content: [
-      "Offline-First: Catalog checks should work on cached data. Add to cart works offline -> Syncs when online.",
-      "Scanner: Prominent floating action button for Barcode Scanner in 'Order' tab.",
-      "Quick Re-order: 'Buy Again' carousel on Home Screen."
-    ]
-  },
-  {
-    id: 'deployment',
-    title: '12. Deployment & IaC',
-    type: 'text',
-    content: "Use Terraform for all infra. Modules: vpc, rds, lambda, cognito. CI/CD via GitHub Actions. Strategy: Blue/Green deployment for critical API services to ensure zero downtime during swaps."
-  },
-  {
-    id: 'rollout',
-    title: '13. Operational Rollout Plan',
-    type: 'list',
-    content: [
-      "Phase 1 (Pilot): 1 Region, 50 Friendly Retailers. Manual ERP sync allowed. Team: 1 PM, 2 Fullstack Devs, 1 Ops Lead.",
-      "Phase 2 (Beta): 3 Regions, 500 Retailers. Auto ERP sync. Add Mobile App. Team: +2 Mobile Devs, +1 QA.",
-      "Phase 3 (GA): All regions. Marketing Push. Team: Full Squad."
-    ]
-  },
-  {
-    id: 'risks',
-    title: '14. Risks & Mitigations',
-    type: 'mixed',
-    content: 'Critical risks to monitor:',
-    subsections: [
-      { title: "Credit Default", content: "Mitigation: Strict credit limits, auto-hold on orders if overdue invoices exist > 7 days." },
-      { title: "Stock Mismatch", content: "Mitigation: Safety stock buffers (display 90% of actual stock)." }
     ]
   },
   {
