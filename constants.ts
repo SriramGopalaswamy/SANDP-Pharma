@@ -1,3 +1,4 @@
+
 import { SpecSection } from './types';
 
 export const ACTION_ITEMS = [
@@ -49,7 +50,7 @@ export const SPEC_SECTIONS: SpecSection[] = [
     subsections: [
       {
         title: "MVP (Pilot Must-Haves)",
-        content: "• Catalog: ElasticSearch-based search, Filters (Brand/Generic), Substitutions.\n• Stock: Real-time visibility per DC.\n• Ordering: Cart, Checkout, Bulk Upload, Barcode Scan.\n• Payments: Net Terms (Credit), UPI/Cards (Stripe/Razorpay).\n• Admin: Order processing, Inventory view, KYC approval workflow.\n• Compliance: License upload & blocking logic."
+        content: "• Catalog: ElasticSearch-based search, Filters (Brand/Generic).\n• Product Substitutions: Logic to suggest generic alternatives. AC: If Brand X is out of stock, the displayed list must show generic equivalents sorted by margin. UI Hint: Suggest a button like 'Switch to Generic' with a 'Save 20%' badge.\n• Stock: Real-time visibility per DC.\n• Ordering: Cart, Checkout, Bulk Upload, Barcode Scan.\n• Payments: Net Terms (Credit), UPI/Cards (Stripe/Razorpay).\n• Admin: Order processing, Inventory view, KYC approval workflow.\n• Compliance: License upload & blocking logic."
       },
       {
         title: "Phase 2 (Advanced)",
@@ -129,8 +130,8 @@ export const SPEC_SECTIONS: SpecSection[] = [
     content: 'Standard Operating Procedures:',
     subsections: [
       {
-        title: "Retailer Onboarding",
-        content: "1. Retailer signs up via App -> Status 'PENDING_KYC'.\n2. Admin reviews DL image on Dashboard.\n3. Checks expiry date.\n4. Sets Status 'APPROVED'.\n5. Assigns Credit Limit based on ext credit score."
+        title: "Retailer Onboarding (Admin KYC Workflow)",
+        content: "1. **Queue Management**: Admin navigates to 'Dashboard > Pending Actions' or 'Retailers > Pending KYC' view.\n2. **Document Review**: Open retailer profile. View uploaded Drug License (DL) image side-by-side with OCR-extracted data.\n3. **Validation**: Manually verify:\n   - **License Number**: Matches government database format.\n   - **Legal Entity Name**: Matches the GSTIN/Business Tax ID provided.\n   - **Validity Date**: Must be > 3 months from today.\n   - **Address**: Matches shipping address proof.\n4. **Risk Assessment & Credit**:\n   - Check external credit score (integration via Experian/CIBIL).\n   - **Low Risk (Score > 750)**: Assign standard limit (e.g., $10k / ₹5L).\n   - **Medium/New**: Assign 'Prepaid Only' or low limit ($2k / ₹1L) for first 3 orders.\n   - **High Risk**: Reject or Request Security Deposit.\n5. **Approval Decision**:\n   - Click 'Approve': Triggers welcome email + SMS with login credentials. Status -> 'ACTIVE'.\n   - Click 'Reject': Select reason code (e.g., 'Blurred Image', 'Expired License') to notify retailer."
       },
       {
         title: "Inventory Sync Issues",

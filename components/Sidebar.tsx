@@ -1,24 +1,36 @@
+
 import React from 'react';
-import { Tab } from '../types';
-import { LayoutDashboard, FileText, ShoppingCart, Package, Settings, LogOut } from 'lucide-react';
+import { Tab, UserRole } from '../types';
+import { LayoutDashboard, FileText, ShoppingCart, Package, Settings, LogOut, Store, List } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: Tab;
   onTabChange: (tab: Tab) => void;
+  userRole: UserRole;
+  onLogout: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
-  const menuItems = [
+const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, userRole, onLogout }) => {
+  
+  const adminItems = [
     { id: Tab.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
     { id: Tab.ORDERS, label: 'Order Management', icon: ShoppingCart },
     { id: Tab.INVENTORY, label: 'Inventory & Stock', icon: Package },
     { id: Tab.SPECIFICATION, label: 'Project Specification', icon: FileText },
   ];
 
+  const retailerItems = [
+    { id: Tab.RETAILER_DASHBOARD, label: 'My Store', icon: Store },
+    { id: Tab.CATALOG, label: 'Catalog', icon: Package },
+    { id: Tab.MY_ORDERS, label: 'My Orders', icon: List },
+  ];
+
+  const menuItems = userRole === 'retailer' ? retailerItems : adminItems;
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-6 flex items-center justify-center border-b border-pharma-800">
-        <div className="bg-white text-pharma-900 font-bold p-2 rounded shadow-lg">SP</div>
+        <div className={`text-pharma-900 font-bold p-2 rounded shadow-lg ${userRole === 'retailer' ? 'bg-emerald-100' : 'bg-white'}`}>SP</div>
         <span className="ml-3 text-xl font-bold tracking-wider">SANDP</span>
       </div>
 
@@ -51,7 +63,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
             <Settings size={20} />
             <span>Settings</span>
          </button>
-         <button className="w-full flex items-center gap-3 px-4 py-3 text-red-300 hover:text-red-100 hover:bg-red-900/30 rounded-lg transition-colors">
+         <button 
+          onClick={onLogout}
+          className="w-full flex items-center gap-3 px-4 py-3 text-red-300 hover:text-red-100 hover:bg-red-900/30 rounded-lg transition-colors"
+        >
             <LogOut size={20} />
             <span>Logout</span>
          </button>

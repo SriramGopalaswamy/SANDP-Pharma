@@ -1,3 +1,4 @@
+
 export interface SpecSection {
   id: string;
   title: string;
@@ -23,8 +24,15 @@ export interface Order {
 }
 
 export enum Tab {
+  // Admin
   DASHBOARD = 'dashboard',
   SPECIFICATION = 'specification',
   ORDERS = 'orders',
-  INVENTORY = 'inventory'
+  INVENTORY = 'inventory',
+  // Retailer
+  RETAILER_DASHBOARD = 'retailer_dashboard',
+  CATALOG = 'catalog',
+  MY_ORDERS = 'my_orders'
 }
+
+export type UserRole = 'admin' | 'retailer' | null;
