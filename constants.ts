@@ -131,7 +131,31 @@ export const SPEC_SECTIONS: SpecSection[] = [
     subsections: [
       {
         title: "Retailer Onboarding (Admin KYC Workflow)",
-        content: "1. **Queue Management**: Admin navigates to 'Dashboard > Pending Actions' or 'Retailers > Pending KYC' view.\n2. **Document Review**: Open retailer profile. View uploaded Drug License (DL) image side-by-side with OCR-extracted data.\n3. **Validation**: Manually verify:\n   - **License Number**: Matches government database format.\n   - **Legal Entity Name**: Matches the GSTIN/Business Tax ID provided.\n   - **Validity Date**: Must be > 3 months from today.\n   - **Address**: Matches shipping address proof.\n4. **Risk Assessment & Credit**:\n   - Check external credit score (integration via Experian/CIBIL).\n   - **Low Risk (Score > 750)**: Assign standard limit (e.g., ₹5L).\n   - **Medium/New**: Assign 'Prepaid Only' or low limit (₹1L) for first 3 orders.\n   - **High Risk**: Reject or Request Security Deposit.\n5. **Approval Decision**:\n   - Click 'Approve': Triggers welcome email + SMS with login credentials. Status -> 'ACTIVE'.\n   - Click 'Reject': Select reason code (e.g., 'Blurred Image', 'Expired License') to notify retailer."
+        content: `**Step 1: Queue & Document Intake (View: Admin Dashboard > 'Pending Approvals')**
+        - Admin selects a retailer from the 'KYC Pending' list.
+        - System displays split-screen view: Uploaded Documents (Left) vs. Data Entry Form (Right).
+
+        **Step 2: Drug License (DL) & Compliance Validation**
+        - **Document Validity**: Ensure DL (Forms 20/21) is clear, un-cropped, and legible.
+        - **Field Level Checks**:
+           1. **License Number**: Cross-reference format (e.g., KA-B32-...) with State Drug Controller database.
+           2. **Firm Name**: Must strictly match the GSTIN/PAN registration name.
+           3. **Competent Person**: Verify the Pharmacist-in-Charge name is listed.
+           4. **Validity**: If expiring < 90 days, Approve with 'Provisional' status and set reminder.
+           5. **Address**: GPS coordinates of shop (from app) should match DL address vicinity.
+
+        **Step 3: Credit Risk Assessment (Tool: Finance Risk Engine)**
+        - **Prepaid Tier**: Default for all new accounts (< 3 months vintage). Payment via UPI/Card only.
+        - **Credit Tier 1 (₹1L - ₹5L)**:
+           - Criteria: 6+ months of Prepaid history OR Valid Bank Reference Letter.
+           - Terms: Net 7 Days.
+        - **Credit Tier 2 (₹5L+)**:
+           - Criteria: 3+ Years in business + External Credit Score > 750 + Physical Shop Visit verification.
+           - Terms: Net 21 Days.
+
+        **Step 4: Final Decision & Notification**
+        - **Approve**: Generates ERP Customer ID, sends Welcome Email/SMS, and enables 'Order' tab.
+        - **Reject**: Admin selects reason (e.g., 'Name Mismatch', 'Blurred Doc'). System sends 'Resubmit' link to retailer.`
       },
       {
         title: "Inventory Sync Issues",

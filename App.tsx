@@ -24,8 +24,14 @@ export default function App() {
   // Cart State
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  // Loyalty State
-  const [loyaltyPoints, setLoyaltyPoints] = useState<number>(850);
+  // Persistent Loyalty State for all roles
+  const [userPoints, setUserPoints] = useState<Record<string, number>>({
+    retailer: 850,
+    distributor: 15400,
+    customer: 240,
+    admin: 0
+  });
+
   const [loyaltyHistory, setLoyaltyHistory] = useState<LoyaltyHistoryItem[]>([
     { id: 1, title: 'Order #ORD-9090', date: 'Oct 24', points: 120, type: 'earn' },
     { id: 2, title: 'Redeemed Voucher', date: 'Oct 20', points: 500, type: 'burn' },
@@ -33,17 +39,15 @@ export default function App() {
     { id: 4, title: 'Tier Bonus', date: 'Oct 01', points: 50, type: 'earn' },
   ]);
 
+  // Derived state for current user
+  const currentPoints = userRole ? userPoints[userRole] : 0;
+
   const handleLogin = (role: UserRole) => {
     setUserRole(role);
     // Set initial tab based on role
     if (role === 'admin') setActiveTab(Tab.DASHBOARD);
     else if (role === 'customer') setActiveTab(Tab.B2C_HOME);
     else setActiveTab(Tab.RETAILER_DASHBOARD);
-
-    // Reset points for demo realism based on role
-    if (role === 'distributor') setLoyaltyPoints(15400);
-    else if (role === 'retailer') setLoyaltyPoints(850);
-    else if (role === 'customer') setLoyaltyPoints(240);
   };
 
   const handleLogout = () => {
@@ -78,6 +82,8 @@ export default function App() {
 
   // Loyalty Handlers
   const handleEarnPoints = (amount: number) => {
+    if (!userRole) return;
+    
     const newHistoryItem: LoyaltyHistoryItem = {
       id: Date.now(),
       title: `Order #${Math.floor(Math.random() * 9000) + 1000}`,
@@ -85,12 +91,20 @@ export default function App() {
       points: amount,
       type: 'earn'
     };
-    setLoyaltyPoints(prev => prev + amount);
+    
+    setUserPoints(prev => ({
+      ...prev,
+      [userRole]: (prev[userRole] || 0) + amount
+    }));
+    
     setLoyaltyHistory(prev => [newHistoryItem, ...prev]);
   };
 
   const handleRedeemPoints = (cost: number, rewardTitle: string) => {
-    if (loyaltyPoints >= cost) {
+    if (!userRole) return false;
+    const balance = userPoints[userRole] || 0;
+
+    if (balance >= cost) {
       const newHistoryItem: LoyaltyHistoryItem = {
         id: Date.now(),
         title: `Redeemed: ${rewardTitle}`,
@@ -98,11 +112,26 @@ export default function App() {
         points: cost,
         type: 'burn'
       };
-      setLoyaltyPoints(prev => prev - cost);
+      
+      setUserPoints(prev => ({
+        ...prev,
+        [userRole]: balance - cost
+      }));
+      
       setLoyaltyHistory(prev => [newHistoryItem, ...prev]);
       return true;
     }
     return false;
+  };
+
+  // Admin Handler to adjust points for other users
+  const handleAdminAdjustPoints = (targetRole: string, amount: number, type: 'add' | 'sub') => {
+    setUserPoints(prev => ({
+      ...prev,
+      [targetRole]: type === 'add' 
+        ? (prev[targetRole] || 0) + amount 
+        : Math.max(0, (prev[targetRole] || 0) - amount)
+    }));
   };
 
   const renderContent = () => {
@@ -112,19 +141,20 @@ export default function App() {
       case Tab.SPECIFICATION: return <SpecificationViewer />;
       case Tab.INVENTORY: return <InventoryView />;
       case Tab.ORDERS: return <OrderList />;
-      case Tab.LOYALTY_MANAGEMENT: return <AdminLoyaltyManager />;
+      case Tab.LOYALTY_MANAGEMENT: 
+        return <AdminLoyaltyManager onAdjustPoints={handleAdminAdjustPoints} />;
       
       // Retailer / Distributor Shared Route Key
       case Tab.RETAILER_DASHBOARD:
         return userRole === 'distributor' 
-          ? <DistributorDashboard points={loyaltyPoints} /> 
-          : <RetailerDashboard points={loyaltyPoints} />;
+          ? <DistributorDashboard points={currentPoints} /> 
+          : <RetailerDashboard points={currentPoints} />;
       
       case Tab.LOYALTY:
         return (
           <LoyaltyView 
             userRole={userRole} 
-            points={loyaltyPoints} 
+            points={currentPoints} 
             history={loyaltyHistory}
             onRedeem={handleRedeemPoints}
           />
@@ -138,7 +168,7 @@ export default function App() {
                 <UploadCloud size={64} className="text-gray-400 mb-4" />
                 <h3 className="text-xl font-bold text-gray-700">Upload Prescription</h3>
                 <p className="text-gray-500 mb-6">Take a photo of your prescription to order</p>
-                <button className="bg-teal-600 text-white px-6 py-2 rounded-lg font-bold">Select File</button>
+                <button className="bg-pharma-900 text-white px-6 py-2 rounded-lg font-bold">Select File</button>
             </div>
         );
 
@@ -194,7 +224,7 @@ export default function App() {
       <aside 
         className={`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } fixed inset-y-0 left-0 z-30 w-64 bg-gray-900 text-white transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 shadow-xl`}
+        } fixed inset-y-0 left-0 z-30 w-64 bg-pharma-900 text-white transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 shadow-xl`}
       >
         <Sidebar 
           activeTab={activeTab} 
@@ -216,9 +246,11 @@ export default function App() {
               <Menu size={24} />
             </button>
             <div className="flex items-center gap-2">
-              <div className="lg:hidden h-8 w-8 bg-blue-900 text-white flex items-center justify-center font-bold rounded">SP</div>
+              <div className="lg:hidden">
+                <img src="https://placehold.co/100x30/003366/ffffff?text=S%26P" alt="S&P Logo" className="h-8 rounded" />
+              </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-800 tracking-tight">
+                <h1 className="text-xl font-bold text-gray-800 tracking-tight hidden md:block">
                   {activeTab === Tab.LOYALTY || activeTab === Tab.LOYALTY_MANAGEMENT ? 'S&P Rewards' : 
                    activeTab === Tab.CATALOG ? 'Product Catalog' :
                    activeTab === Tab.CHECKOUT ? 'Secure Checkout' : 'Dashboard'}
@@ -231,7 +263,7 @@ export default function App() {
              {userRole !== 'admin' && (
                <button 
                 onClick={() => setActiveTab(Tab.CHECKOUT)}
-                className="relative p-2 text-gray-500 hover:text-pharma-600 transition-colors"
+                className="relative p-2 text-gray-500 hover:text-pharma-900 transition-colors"
                >
                  <ShoppingCart size={24} />
                  {cart.length > 0 && (

@@ -2,8 +2,15 @@
 import React, { useState } from 'react';
 import { Gift, Users, TrendingUp, AlertCircle, Plus, Edit2, Trash2, CheckCircle } from 'lucide-react';
 
-const AdminLoyaltyManager: React.FC = () => {
+interface AdminLoyaltyManagerProps {
+  onAdjustPoints?: (role: string, amount: number, type: 'add' | 'sub') => void;
+}
+
+const AdminLoyaltyManager: React.FC<AdminLoyaltyManagerProps> = ({ onAdjustPoints }) => {
   const [allocationSuccess, setAllocationSuccess] = useState(false);
+  const [selectedRole, setSelectedRole] = useState('retailer');
+  const [amount, setAmount] = useState<string>('500');
+  const [actionType, setActionType] = useState<'add' | 'sub'>('add');
 
   // Mock data for rewards
   const [rewards, setRewards] = useState([
@@ -16,8 +23,12 @@ const AdminLoyaltyManager: React.FC = () => {
 
   const handleAllocate = (e: React.FormEvent) => {
     e.preventDefault();
-    setAllocationSuccess(true);
-    setTimeout(() => setAllocationSuccess(false), 3000);
+    
+    if (onAdjustPoints && amount) {
+        onAdjustPoints(selectedRole, parseInt(amount), actionType);
+        setAllocationSuccess(true);
+        setTimeout(() => setAllocationSuccess(false), 3000);
+    }
   };
 
   return (
@@ -149,24 +160,38 @@ const AdminLoyaltyManager: React.FC = () => {
                     <form onSubmit={handleAllocate} className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Select User</label>
-                            <select className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-pharma-500 focus:outline-none">
-                                <option>Select a user...</option>
-                                <option>Raj StoreOwner (City Pharma)</option>
-                                <option>Anita Kumar (Customer)</option>
-                                <option>Global Supply (Distributor)</option>
+                            <select 
+                                value={selectedRole}
+                                onChange={(e) => setSelectedRole(e.target.value)}
+                                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-pharma-500 focus:outline-none"
+                            >
+                                <option value="retailer">Raj StoreOwner (Retailer)</option>
+                                <option value="customer">Anita Kumar (Customer)</option>
+                                <option value="distributor">Global Supply (Distributor)</option>
                             </select>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                              <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Action</label>
-                                <select className="w-full border border-gray-300 rounded-lg p-2">
+                                <select 
+                                    value={actionType}
+                                    onChange={(e) => setActionType(e.target.value as 'add' | 'sub')}
+                                    className="w-full border border-gray-300 rounded-lg p-2"
+                                >
                                     <option value="add">Credit (+)</option>
                                     <option value="sub">Debit (-)</option>
                                 </select>
                              </div>
                              <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Points</label>
-                                <input type="number" className="w-full border border-gray-300 rounded-lg p-2" placeholder="e.g. 500" required />
+                                <input 
+                                    type="number" 
+                                    value={amount}
+                                    onChange={(e) => setAmount(e.target.value)}
+                                    className="w-full border border-gray-300 rounded-lg p-2" 
+                                    placeholder="e.g. 500" 
+                                    required 
+                                />
                              </div>
                         </div>
                         <div>
