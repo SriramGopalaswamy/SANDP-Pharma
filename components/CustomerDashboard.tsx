@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, Upload, Percent, Heart, Activity, ShoppingBag, PlayCircle } from 'lucide-react';
+import { Search, Upload, Percent, Heart, Activity, ShoppingBag, PlayCircle, Star, ChevronRight } from 'lucide-react';
 import { Tab } from '../types';
 
 interface CustomerDashboardProps {
@@ -41,38 +41,63 @@ const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate }) => 
           </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <button 
-            onClick={() => onNavigate(Tab.CATALOG)}
-            className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-300 transition-all flex flex-col items-center gap-2 text-center group"
-        >
-            <div className="h-12 w-12 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                <ShoppingBag size={24} />
-            </div>
-            <span className="font-bold text-gray-700">Medicines</span>
-        </button>
-        <button className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-purple-300 transition-all flex flex-col items-center gap-2 text-center group">
-            <div className="h-12 w-12 bg-purple-50 text-purple-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Activity size={24} />
-            </div>
-            <span className="font-bold text-gray-700">Lab Tests</span>
-        </button>
-        <button 
-            onClick={() => onNavigate(Tab.UPLOAD_RX)}
-            className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-teal-300 transition-all flex flex-col items-center gap-2 text-center group"
-        >
-            <div className="h-12 w-12 bg-teal-50 text-teal-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Upload size={24} />
-            </div>
-            <span className="font-bold text-gray-700">Upload Rx</span>
-        </button>
-        <button className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-red-300 transition-all flex flex-col items-center gap-2 text-center group">
-            <div className="h-12 w-12 bg-red-50 text-red-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Heart size={24} />
-            </div>
-            <span className="font-bold text-gray-700">Care Plan</span>
-        </button>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Quick Actions */}
+          <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button 
+                onClick={() => onNavigate(Tab.CATALOG)}
+                className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-300 transition-all flex flex-col items-center gap-2 text-center group"
+            >
+                <div className="h-12 w-12 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <ShoppingBag size={24} />
+                </div>
+                <span className="font-bold text-gray-700">Medicines</span>
+            </button>
+            <button className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-purple-300 transition-all flex flex-col items-center gap-2 text-center group">
+                <div className="h-12 w-12 bg-purple-50 text-purple-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Activity size={24} />
+                </div>
+                <span className="font-bold text-gray-700">Lab Tests</span>
+            </button>
+            <button 
+                onClick={() => onNavigate(Tab.UPLOAD_RX)}
+                className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-teal-300 transition-all flex flex-col items-center gap-2 text-center group"
+            >
+                <div className="h-12 w-12 bg-teal-50 text-teal-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Upload size={24} />
+                </div>
+                <span className="font-bold text-gray-700">Upload Rx</span>
+            </button>
+            <button className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-red-300 transition-all flex flex-col items-center gap-2 text-center group">
+                <div className="h-12 w-12 bg-red-50 text-red-900 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Heart size={24} />
+                </div>
+                <span className="font-bold text-gray-700">Care Plan</span>
+            </button>
+          </div>
+
+          {/* Loyalty Widget */}
+          <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-100 flex flex-col justify-between">
+             <div className="flex justify-between items-start">
+                 <div>
+                    <h3 className="font-bold text-yellow-900">S&P Rewards</h3>
+                    <p className="text-xs text-yellow-700">My Balance</p>
+                 </div>
+                 <div className="bg-white p-2 rounded-full shadow-sm text-yellow-500">
+                    <Star fill="currentColor" size={20} />
+                 </div>
+             </div>
+             <div>
+                <span className="text-3xl font-bold text-yellow-900">240</span>
+                <span className="text-sm font-medium text-yellow-700 ml-1">pts</span>
+             </div>
+             <button 
+                onClick={() => onNavigate(Tab.LOYALTY)}
+                className="mt-3 w-full bg-white text-yellow-800 text-sm font-bold py-2 rounded-lg shadow-sm hover:bg-yellow-100 flex items-center justify-center gap-1"
+             >
+                View Rewards <ChevronRight size={14} />
+             </button>
+          </div>
       </div>
 
       {/* Featured Categories */}

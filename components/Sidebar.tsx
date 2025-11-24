@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Tab, UserRole } from '../types';
-import { LayoutDashboard, FileText, ShoppingCart, Package, Settings, LogOut, Store, List, Truck, Home, Upload, Award } from 'lucide-react';
+import { LayoutDashboard, FileText, ShoppingCart, Package, Settings, LogOut, Store, List, Truck, Home, Upload, Award, Gift } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: Tab;
@@ -16,6 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, userRole, onL
     { id: Tab.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
     { id: Tab.ORDERS, label: 'Order Management', icon: ShoppingCart },
     { id: Tab.INVENTORY, label: 'Inventory & Stock', icon: Package },
+    { id: Tab.LOYALTY_MANAGEMENT, label: 'Loyalty Program', icon: Gift },
     { id: Tab.SPECIFICATION, label: 'Project Specification', icon: FileText },
   ];
 
@@ -38,6 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, userRole, onL
     { id: Tab.CATALOG, label: 'Medicines', icon: Package },
     { id: Tab.UPLOAD_RX, label: 'Upload Prescription', icon: Upload },
     { id: Tab.MY_ORDERS, label: 'Your Orders', icon: List },
+    { id: Tab.LOYALTY, label: 'Rewards', icon: Award },
   ];
 
   let menuItems = adminItems;

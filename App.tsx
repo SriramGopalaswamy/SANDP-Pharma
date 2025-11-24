@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Tab, UserRole, CartItem, LoyaltyHistoryItem } from './types';
 import Sidebar from './components/Sidebar';
 import AdminDashboard from './components/AdminDashboard';
+import AdminLoyaltyManager from './components/AdminLoyaltyManager';
 import SpecificationViewer from './components/SpecificationViewer';
 import OrderList from './components/OrderList';
 import InventoryView from './components/InventoryView';
@@ -111,6 +112,7 @@ export default function App() {
       case Tab.SPECIFICATION: return <SpecificationViewer />;
       case Tab.INVENTORY: return <InventoryView />;
       case Tab.ORDERS: return <OrderList />;
+      case Tab.LOYALTY_MANAGEMENT: return <AdminLoyaltyManager />;
       
       // Retailer / Distributor Shared Route Key
       case Tab.RETAILER_DASHBOARD:
@@ -217,7 +219,7 @@ export default function App() {
               <div className="lg:hidden h-8 w-8 bg-blue-900 text-white flex items-center justify-center font-bold rounded">SP</div>
               <div>
                 <h1 className="text-xl font-bold text-gray-800 tracking-tight">
-                  {activeTab === Tab.LOYALTY ? 'Rewards Program' : 
+                  {activeTab === Tab.LOYALTY || activeTab === Tab.LOYALTY_MANAGEMENT ? 'S&P Rewards' : 
                    activeTab === Tab.CATALOG ? 'Product Catalog' :
                    activeTab === Tab.CHECKOUT ? 'Secure Checkout' : 'Dashboard'}
                 </h1>

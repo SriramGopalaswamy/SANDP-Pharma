@@ -44,6 +44,7 @@ export enum Tab {
   SPECIFICATION = 'specification',
   ORDERS = 'orders',
   INVENTORY = 'inventory',
+  LOYALTY_MANAGEMENT = 'loyalty_management',
   
   // Retailer & Distributor
   RETAILER_DASHBOARD = 'retailer_dashboard',
