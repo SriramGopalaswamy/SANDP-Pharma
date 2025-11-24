@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, ShoppingCart, Tag, Plus, Minus, Info, AlertTriangle } from 'lucide-react';
+import { Search, ShoppingCart, Tag, Plus, Minus, ArrowLeft, MapPin, Truck, Warehouse, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { CartItem, UserRole } from '../types';
 
 interface ProductCatalogProps {
@@ -12,6 +12,7 @@ interface ProductCatalogProps {
 const ProductCatalog: React.FC<ProductCatalogProps> = ({ cart, onAddToCart, userRole }) => {
   const isDistributor = userRole === 'distributor';
   const isCustomer = userRole === 'customer';
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
 
   // Base Products Data
   const baseProducts = [
@@ -67,6 +68,151 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({ cart, onAddToCart, user
     setQuantities(prev => ({ ...prev, [product.id]: product.moq }));
   };
 
+  // --- PRODUCT DETAIL PAGE RENDERER ---
+  if (selectedProduct) {
+    const currentQty = getQuantity(selectedProduct.id, selectedProduct.moq);
+    
+    return (
+        <div className="space-y-6 animate-in slide-in-from-right-4">
+            <button onClick={() => setSelectedProduct(null)} className="flex items-center gap-2 text-gray-600 hover:text-pharma-900 font-medium transition-colors">
+                <ArrowLeft size={20} /> Back to Catalog
+            </button>
+
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                {/* Product Detail Header */}
+                <div className="p-8 border-b border-gray-100 flex flex-col md:flex-row gap-8">
+                    <div className="w-full md:w-1/3 bg-gray-50 rounded-xl flex items-center justify-center p-8 border border-gray-100">
+                        <img src={selectedProduct.image} alt={selectedProduct.name} className="max-h-64 object-contain mix-blend-multiply" />
+                    </div>
+                    <div className="flex-1 space-y-6">
+                        <div>
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded">{selectedProduct.type}</span>
+                                {isDistributor && <span className="px-2 py-1 bg-purple-50 text-purple-700 text-xs font-bold rounded">Bulk Item</span>}
+                            </div>
+                            <h1 className="text-3xl font-extrabold text-gray-900">{selectedProduct.name}</h1>
+                            <p className="text-lg text-gray-500 font-medium">{selectedProduct.brand}</p>
+                            {!isDistributor && !isCustomer && (
+                                <p className="text-sm text-amber-600 font-medium mt-1">Generic Equivalent: {selectedProduct.generic}</p>
+                            )}
+                        </div>
+                        
+                        <div className="flex items-end gap-2">
+                            <span className="text-4xl font-bold text-pharma-900">₹{selectedProduct.price}</span>
+                            <span className="text-base text-gray-400 mb-2 font-medium">per {selectedProduct.unitLabel}</span>
+                        </div>
+
+                        <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg w-fit">
+                             <div className="flex items-center border border-gray-200 rounded-lg bg-white">
+                                <button 
+                                  onClick={() => handleQuantityChange(selectedProduct.id, -1, selectedProduct.moq)}
+                                  className="p-3 hover:bg-gray-100 text-gray-600 transition-colors"
+                                >
+                                  <Minus size={18} />
+                                </button>
+                                <span className="w-16 text-center font-bold text-lg">{currentQty}</span>
+                                <button 
+                                  onClick={() => handleQuantityChange(selectedProduct.id, 1, selectedProduct.moq)}
+                                  className="p-3 hover:bg-gray-100 text-gray-600 transition-colors"
+                                >
+                                  <Plus size={18} />
+                                </button>
+                             </div>
+                             <button 
+                                onClick={() => handleAddClick(selectedProduct)}
+                                className="bg-pharma-900 text-white px-8 py-3 rounded-lg hover:bg-pharma-800 transition-all font-bold shadow-md active:scale-95 flex items-center gap-2"
+                             >
+                                <ShoppingCart size={20} /> Add to Cart
+                             </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Real-Time Stock & Logistics */}
+                <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100">
+                     
+                     {/* Warehouse Stock */}
+                     <div className="p-8 space-y-6">
+                         <h3 className="font-bold text-gray-900 flex items-center gap-2 text-lg">
+                             <Warehouse className="text-pharma-600" /> Real-Time Stock Availability
+                         </h3>
+                         <div className="space-y-4">
+                             {[
+                                 { name: 'Central Warehouse (Mumbai)', stock: 'High', count: 1250, status: 'Available' },
+                                 { name: 'Regional DC (Bangalore)', stock: 'Low', count: 42, status: 'Selling Fast' },
+                                 { name: 'Local Hub (Indiranagar)', stock: 'Out', count: 0, status: 'Out of Stock' },
+                             ].map((wh, i) => (
+                                 <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                     <div>
+                                         <p className="font-bold text-gray-800 text-sm">{wh.name}</p>
+                                         <p className={`text-xs font-medium mt-1 ${wh.count > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                                             {wh.count > 0 ? `${wh.count} Units Available` : 'Restocking in 2 days'}
+                                         </p>
+                                     </div>
+                                     <div className="text-right">
+                                         {wh.count > 0 ? (
+                                             <div className="flex items-center gap-1 text-green-600 bg-green-100 px-2 py-1 rounded text-xs font-bold">
+                                                 <CheckCircle size={14} /> In Stock
+                                             </div>
+                                         ) : (
+                                             <div className="flex items-center gap-1 text-red-500 bg-red-100 px-2 py-1 rounded text-xs font-bold">
+                                                 <XCircle size={14} /> OOS
+                                             </div>
+                                         )}
+                                     </div>
+                                 </div>
+                             ))}
+                         </div>
+                     </div>
+
+                     {/* Delivery Estimate */}
+                     <div className="p-8 space-y-6">
+                         <h3 className="font-bold text-gray-900 flex items-center gap-2 text-lg">
+                             <Truck className="text-pharma-600" /> Estimated Delivery
+                         </h3>
+                         
+                         <div className="bg-blue-50 border border-blue-100 p-5 rounded-xl">
+                             <div className="flex items-start gap-3">
+                                 <MapPin className="text-blue-600 shrink-0 mt-1" size={24} />
+                                 <div>
+                                     <p className="text-xs text-blue-600 font-bold uppercase tracking-wider mb-1">Delivering to</p>
+                                     <p className="font-bold text-gray-900 text-base">City Pharma, Indiranagar, Bangalore</p>
+                                     <p className="text-sm text-gray-500">Karnataka - 560038</p>
+                                 </div>
+                                 <button className="text-xs text-blue-600 font-bold underline ml-auto hover:text-blue-800">Change</button>
+                             </div>
+                         </div>
+
+                         <div className="space-y-3">
+                             <div className="flex items-center gap-4 p-4 border border-green-200 bg-green-50/50 rounded-xl">
+                                 <div className="h-10 w-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center shrink-0">
+                                     <Truck size={20} />
+                                 </div>
+                                 <div className="flex-1">
+                                     <p className="text-xs text-green-700 font-bold uppercase tracking-wide">Fastest Delivery</p>
+                                     <p className="font-bold text-gray-900">Tomorrow, by 2:00 PM</p>
+                                     <p className="text-xs text-gray-500">Fulfilled via Regional DC (Bangalore)</p>
+                                 </div>
+                             </div>
+                             
+                             <div className="flex items-center gap-4 p-4 border border-gray-200 bg-white rounded-xl opacity-75">
+                                 <div className="h-10 w-10 bg-gray-100 text-gray-500 rounded-full flex items-center justify-center shrink-0">
+                                     <Warehouse size={20} />
+                                 </div>
+                                 <div className="flex-1">
+                                     <p className="text-xs text-gray-500 font-bold uppercase tracking-wide">Standard Shipping</p>
+                                     <p className="font-bold text-gray-900">3 - 4 Days</p>
+                                     <p className="text-xs text-gray-500">Fulfilled via Central Warehouse</p>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+        </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -96,7 +242,7 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({ cart, onAddToCart, user
           // B2C Card Design
           if (isCustomer) {
             return (
-                <div key={product.id} className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all group overflow-hidden">
+                <div key={product.id} className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all group overflow-hidden cursor-pointer" onClick={() => setSelectedProduct(product)}>
                     <div className="relative aspect-square bg-gray-50 flex items-center justify-center p-4">
                         <img src={product.image} alt={product.name} className="object-contain mix-blend-multiply opacity-80 group-hover:opacity-100 transition-opacity" />
                     </div>
@@ -109,7 +255,7 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({ cart, onAddToCart, user
                                 <div className="font-bold text-lg text-gray-900">₹{product.price}</div>
                             </div>
                             <button 
-                                onClick={() => handleAddClick(product)}
+                                onClick={(e) => { e.stopPropagation(); handleAddClick(product); }}
                                 className="bg-teal-600 text-white p-2 rounded-lg hover:bg-teal-700 shadow-sm"
                             >
                                 <Plus size={18} />
@@ -130,10 +276,10 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({ cart, onAddToCart, user
               )}
               
               <div className="p-5">
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex justify-between items-start mb-4 cursor-pointer" onClick={() => setSelectedProduct(product)}>
                   <div>
                     <span className="inline-block px-2 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded mb-2">{product.type}</span>
-                    <h3 className="text-lg font-bold text-gray-900">{product.name}</h3>
+                    <h3 className="text-lg font-bold text-gray-900 hover:text-pharma-700 transition-colors">{product.name}</h3>
                     <p className="text-sm text-gray-500">{product.brand}</p>
                     <p className="text-xs text-gray-400 mt-1">{product.unitLabel}</p>
                   </div>
