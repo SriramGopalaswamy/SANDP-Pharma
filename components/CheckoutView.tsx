@@ -170,6 +170,14 @@ const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, onRemoveItem, onClear
         <h2 className="text-2xl font-bold text-gray-800">Order Summary</h2>
         
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
+          <div className="flex justify-between items-center pb-4 border-b border-gray-100">
+             <div className="flex items-center gap-2">
+                <img src="https://placehold.co/80x30/003366/ffffff?text=S%26P" alt="Logo" className="rounded" />
+                <span className="text-xs text-gray-400 uppercase tracking-wide">Secure Checkout</span>
+             </div>
+             <Lock size={16} className="text-green-600" />
+          </div>
+
           <div className="flex justify-between text-gray-600">
             <span>Subtotal</span>
             <span>₹{subtotal.toFixed(2)}</span>

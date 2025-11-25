@@ -24,7 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, userRole, onL
     { id: Tab.RETAILER_DASHBOARD, label: 'My Store', icon: Store },
     { id: Tab.CATALOG, label: 'Catalog', icon: Package },
     { id: Tab.MY_ORDERS, label: 'My Orders', icon: List },
-    { id: Tab.SUNNY_CLUB, label: 'Sunny Club', icon: Sun }, // Replaced basic Loyalty
+    { id: Tab.SUNNY_CLUB, label: 'Sunny Club', icon: Sun }, 
   ];
 
   const distributorItems = [
@@ -74,18 +74,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, userRole, onL
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#0a192f] text-white">
-      <div className="p-6 flex items-center justify-center border-b border-gray-800">
-        {/* S&P Branding Placeholder */}
-        <div className="flex flex-col items-center gap-2">
-            <div className="h-12 w-32 bg-white rounded flex items-center justify-center overflow-hidden">
-                <img src="https://placehold.co/150x50/003366/ffffff?text=S%26P+USA" alt="S&P Logo" className="object-cover" />
-            </div>
-            <span className="text-xs text-gray-400 tracking-widest uppercase">Pharmaceuticals</span>
-        </div>
+    <div className="flex flex-col h-full bg-[#0a192f] text-white shadow-2xl relative z-20 font-sans">
+      <div className="px-6 py-8 flex flex-col items-start border-b border-gray-800 bg-[#051020]">
+        {/* S&P Branding */}
+        <img src="https://placehold.co/200x60/003366/ffffff?text=S%26P+USA" alt="S&P Logo" className="h-10 mb-2 rounded-sm" />
+        <span className="text-[10px] text-gray-400 tracking-[0.2em] uppercase pl-1">Pharmaceuticals</span>
       </div>
 
-      <nav className="flex-1 px-4 py-6 space-y-2">
+      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -95,14 +91,14 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, userRole, onL
               onClick={() => onTabChange(item.id)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${getHoverClass(isActive)}`}
             >
-              <Icon size={20} className={isActive ? 'text-white' : 'text-gray-400 group-hover:text-white'} />
-              <span className="font-medium">{item.label}</span>
+              <Icon size={20} className={`transition-colors ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-white'}`} />
+              <span className="font-medium tracking-wide">{item.label}</span>
             </button>
           );
         })}
       </nav>
 
-      <div className="p-4 border-t border-gray-800 space-y-2">
+      <div className="p-4 border-t border-gray-800 space-y-2 bg-[#051020]">
          {userRole !== 'customer' && (
             <button className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors">
                 <Settings size={20} />
@@ -111,7 +107,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, userRole, onL
          )}
          <button 
           onClick={onLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 text-red-300 hover:text-red-100 hover:bg-red-900/30 rounded-lg transition-colors"
+          className="w-full flex items-center gap-3 px-4 py-3 text-red-300 hover:text-red-100 hover:bg-red-900/20 rounded-lg transition-colors"
         >
             <LogOut size={20} />
             <span>Logout</span>

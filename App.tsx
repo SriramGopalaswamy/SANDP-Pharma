@@ -15,7 +15,7 @@ import LoginScreen from './components/LoginScreen';
 import CheckoutView from './components/CheckoutView';
 import SunnyClubView from './components/SunnyClubView';
 import LoyaltyView from './components/LoyaltyView';
-import { Menu, ShoppingCart, UploadCloud } from 'lucide-react';
+import { Menu, ShoppingCart, UploadCloud, Sun } from 'lucide-react';
 
 export default function App() {
   const [userRole, setUserRole] = useState<UserRole | null>(null); 
@@ -249,7 +249,7 @@ export default function App() {
   const roleInfo = getRoleInfo();
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-screen bg-gray-50 overflow-hidden font-sans">
       {/* Mobile Sidebar Overlay */}
       {!isSidebarOpen && (
         <div 
@@ -262,7 +262,7 @@ export default function App() {
       <aside 
         className={`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } fixed inset-y-0 left-0 z-30 w-64 bg-pharma-900 text-white transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 shadow-xl`}
+        } fixed inset-y-0 left-0 z-30 w-64 bg-pharma-900 text-white transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 shadow-2xl`}
       >
         <Sidebar 
           activeTab={activeTab} 
@@ -274,8 +274,8 @@ export default function App() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm z-10">
+        {/* Header - Brand Aligned */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm z-10 sticky top-0">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -289,7 +289,7 @@ export default function App() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-800 tracking-tight hidden md:block">
-                  {activeTab === Tab.SUNNY_CLUB ? 'Sunny Club Rewards' : 
+                  {activeTab === Tab.SUNNY_CLUB ? <span className="flex items-center gap-2 text-yellow-600"><Sun size={24} fill="currentColor" /> Sunny Club Rewards</span> : 
                    activeTab === Tab.CATALOG ? 'Product Catalog' :
                    activeTab === Tab.CHECKOUT ? 'Secure Checkout' : 'Dashboard'}
                 </h1>
@@ -312,18 +312,18 @@ export default function App() {
                </button>
              )}
 
-             <div className="hidden md:flex flex-col items-end mr-4">
-                <span className="text-sm font-medium text-gray-700">{roleInfo.name}</span>
-                <span className="text-xs text-gray-400">{roleInfo.label}</span>
+             <div className="hidden md:flex flex-col items-end mr-4 border-r border-gray-100 pr-6">
+                <span className="text-sm font-bold text-gray-900">{roleInfo.name}</span>
+                <span className="text-xs text-gray-400 tracking-wide uppercase">{roleInfo.label}</span>
              </div>
-             <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold border-2 border-opacity-20 ${roleInfo.color} border-current`}>
+             <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold border-2 border-opacity-20 ${roleInfo.color} border-current ring-2 ring-gray-100`}>
                 {roleInfo.badge}
              </div>
           </div>
         </header>
 
         {/* Scrollable Area */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 spec-scroll">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 spec-scroll bg-gray-50">
           <div className="max-w-7xl mx-auto">
             {renderContent()}
           </div>

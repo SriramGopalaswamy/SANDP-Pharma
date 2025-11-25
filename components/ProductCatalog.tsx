@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, ShoppingCart, Tag, Plus, Minus, ArrowLeft, MapPin, Truck, Warehouse, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { Search, ShoppingCart, Tag, Plus, Minus, ArrowLeft, MapPin, Truck, Warehouse, CheckCircle, XCircle, AlertTriangle, Star } from 'lucide-react';
 import { CartItem, UserRole } from '../types';
 
 interface ProductCatalogProps {
@@ -13,6 +13,17 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({ cart, onAddToCart, user
   const isDistributor = userRole === 'distributor';
   const isCustomer = userRole === 'customer';
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+
+  // B2C Categories
+  const categories = [
+    { id: 'all', name: 'All Medicines', active: true },
+    { id: 'covid', name: 'Covid Essentials' },
+    { id: 'diabetes', name: 'Diabetes Care' },
+    { id: 'skin', name: 'Skin Care' },
+    { id: 'homeopathy', name: 'Homeopathy' },
+    { id: 'ayurveda', name: 'Ayurveda' },
+    { id: 'devices', name: 'Healthcare Devices' },
+  ];
 
   // Base Products Data
   const baseProducts = [
@@ -34,7 +45,7 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({ cart, onAddToCart, user
       unitLabel = 'Carton (50 Packs)';
       moq = 50;
     } else if (isCustomer) {
-      price = Math.round(p.basePrice * 1.2); // MRP (20% higher)
+      price = Math.round(p.basePrice * 1.05); // Slight markup for B2C demo price
       unitLabel = 'Strip';
       moq = 1;
     }
@@ -227,7 +238,7 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({ cart, onAddToCart, user
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">
-            {isCustomer ? 'Medicines' : 'Product Catalog'}
+            {isCustomer ? 'Browse Medicines' : 'Product Catalog'}
           </h2>
           <p className="text-gray-500">
             {isDistributor ? 'Bulk ordering with MOQ applied.' : isCustomer ? 'Order genuine medicines with 24h delivery.' : 'Browse medicines for your pharmacy.'}
@@ -237,37 +248,73 @@ const ProductCatalog: React.FC<ProductCatalogProps> = ({ cart, onAddToCart, user
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
           <input 
             type="text" 
-            placeholder="Search medicines..." 
+            placeholder={isCustomer ? "Search for medicines..." : "Search catalog..."}
             className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pharma-500"
           />
         </div>
       </div>
 
+      {/* B2C Category Strip */}
+      {isCustomer && (
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mt-2 mb-2">
+            {categories.map(cat => (
+                <button 
+                    key={cat.id}
+                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap border transition-colors ${
+                        cat.active 
+                        ? 'bg-teal-600 text-white border-teal-600' 
+                        : 'bg-white text-gray-600 border-gray-200 hover:border-teal-400'
+                    }`}
+                >
+                    {cat.name}
+                </button>
+            ))}
+        </div>
+      )}
+
       {/* Grid: Different Layout for Customer (B2C) vs B2B */}
-      <div className={`grid gap-6 ${isCustomer ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'}`}>
+      <div className={`grid gap-6 ${isCustomer ? 'grid-cols-2 md:grid-cols-4 lg:grid-cols-5' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'}`}>
         {products.map((product) => {
           const currentQty = getQuantity(product.id, product.moq);
           
-          // B2C Card Design
+          // B2C Consumer Card Design
           if (isCustomer) {
+            const discount = Math.round(((product.basePrice * 1.25 - product.price) / (product.basePrice * 1.25)) * 100) || 15;
+            
             return (
-                <div key={product.id} className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all group overflow-hidden cursor-pointer" onClick={() => setSelectedProduct(product)}>
-                    <div className="relative aspect-square bg-gray-50 flex items-center justify-center p-4">
-                        <img src={product.image} alt={product.name} className="object-contain mix-blend-multiply opacity-80 group-hover:opacity-100 transition-opacity" />
+                <div key={product.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden cursor-pointer relative" onClick={() => setSelectedProduct(product)}>
+                    {/* Discount Badge */}
+                    <div className="absolute top-0 left-0 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-br-lg z-10 shadow-sm">
+                        {discount}% OFF
                     </div>
-                    <div className="p-4">
-                        <div className="text-xs text-gray-500 mb-1">{product.brand}</div>
-                        <h3 className="font-bold text-gray-800 text-sm leading-tight h-10 overflow-hidden">{product.name}</h3>
-                        <div className="mt-3 flex items-end justify-between">
+
+                    {/* Image Area */}
+                    <div className="aspect-[4/3] p-6 bg-white flex items-center justify-center border-b border-gray-50">
+                        <img src={product.image} alt={product.name} className="h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
+                    </div>
+
+                    {/* Content Area */}
+                    <div className="p-4 flex flex-col h-full">
+                        <div className="flex justify-between items-start mb-1">
+                            <h3 className="font-bold text-gray-800 text-sm leading-snug line-clamp-2 h-10">{product.name}</h3>
+                        </div>
+                        <p className="text-xs text-gray-500 mb-2">{product.unitLabel}</p>
+                        
+                        {/* Fake Rating */}
+                        <div className="flex items-center gap-1 mb-3 bg-green-50 w-fit px-1.5 py-0.5 rounded text-[10px] font-bold text-green-700 border border-green-100">
+                            4.5 <Star size={10} fill="currentColor" />
+                        </div>
+
+                        <div className="mt-auto pt-2 flex items-center justify-between">
                             <div>
-                                <span className="text-xs text-gray-400 line-through">₹{Math.round(product.price * 1.1)}</span>
-                                <div className="font-bold text-lg text-gray-900">₹{product.price}</div>
+                                <span className="text-xs text-gray-400 line-through mr-1">₹{Math.round(product.price * 1.2)}</span>
+                                <div className="font-bold text-base text-gray-900">₹{product.price}</div>
                             </div>
                             <button 
                                 onClick={(e) => { e.stopPropagation(); handleAddClick(product); }}
-                                className="bg-teal-600 text-white p-2 rounded-lg hover:bg-teal-700 shadow-sm"
+                                className="text-teal-600 font-bold text-xs uppercase hover:bg-teal-50 px-3 py-1.5 rounded transition-colors border border-transparent hover:border-teal-100"
                             >
-                                <Plus size={18} />
+                                ADD
                             </button>
                         </div>
                     </div>
